@@ -68,10 +68,6 @@ bool|and|24Kmagic|"+"|- { //{{{2
 		} //2}}}
 
 {DIGIT}+	{ //{{{2
-		//TODO: The following computation of the integer
-		// value does not check for overflow. It should do so.
-
-
     //Note that the IntLitToken does not take a TokenKind argument
     // since it's implicitly known that the token represents an
     // INTLITERAL		
@@ -93,8 +89,6 @@ bool|and|24Kmagic|"+"|- { //{{{2
       yylval->lexeme = new IntLitToken(pos, intVal);
     }
 
-		//TODO: update the colNum count according to the number of
-		// characters consumed. 
     colNum = colNum+strlen(yytext);
 
 		//As before, alert the client program that an INTLITERAL 
