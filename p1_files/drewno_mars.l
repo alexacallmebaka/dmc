@@ -35,70 +35,35 @@ DIGIT [0-9]
             yylval = lval;
 %}
 
-and { //{{{2
-		int tokenKind = TokenKind::AND;
+bool|and|24Kmagic|"+"|- { //{{{2
+		int tokenKind;
+    
+    if(strcmp("bool",yytext) == 0) {
+        tokenKind = TokenKind::BOOL;
+    }
+
+    else if(strcmp("and",yytext) == 0) {
+        tokenKind = TokenKind::AND;
+    }
+    
+    else if(strcmp("24Kmagic",yytext) == 0) {
+        tokenKind = TokenKind::MAGIC;
+    }
+
+    else if(strcmp("+",yytext) == 0) {
+        tokenKind = TokenKind::CROSS;
+    }
+
+
+    else if(strcmp("-",yytext) == 0) {
+        tokenKind = TokenKind::DASH;
+    }
+
+    int offset = strlen(yytext);
 		Position * pos = new Position(
-			lineNum, colNum, lineNum, colNum+3);
+			lineNum, colNum, lineNum, colNum+offset);
 		this->yylval->lexeme = new Token(pos, tokenKind);
-		colNum = colNum+3;
-		return tokenKind;
-		} //2}}}
-
-24Kmagic { //{{{2
-		int tokenKind = TokenKind::MAGIC;
-		Position * pos = new Position(
-			lineNum, colNum, lineNum, colNum+8);
-		this->yylval->lexeme = new Token(pos, tokenKind);
-		colNum = colNum+8;
-		return tokenKind;
-		} //2}}}
-
-"+"		{ //{{{2
-		// Keep track of the "kind" of token we matched. In this case,
-		// it's a CROSS (aka the plus symbol). The full list of token
-		// kinds is declared around line 197 of grammar.hh. The testing
-		// functionScanner::outputTokens also indicates what each token
-		// represents (declared in scanner.cpp line 9)
-		int tokenKind = TokenKind::CROSS;
-
-		Position * pos = new Position(
-			lineNum, colNum, lineNum, colNum+1);
-
-		//Instatiate a token. There are 5 classes of tokens defined based on 
-		// - a literal string (StringLitToken)
-		// - a literal integer (IntLitToken)
-		// - a literal short (ShortLitToken)
-		// - an identifier (IDToken)
-		// - a base Token (any other type)
-		// The token object is a handy place to keep information about the
-		// token (i.e. token metadata) such as the line and column on which
-		// the token character started (which can be used later in debug 
-		// messages, etc). 
-		Token * token = new Token(pos, tokenKind);
-
-		//Assign the token to a instance variable of the scanner.
-		// (When Flex processes a .l file in C++ mode, it creates 
-		// a class called Scanner, which is a subclass of yyFlexScanner)
-		// By assigning a value to this field, we put the token
-		// metadata in a place where scanner's client program can find it.
-		this->yylval->lexeme = token;
-
-		//Since we consumed 1 character, increase the column number by 1
-		colNum++;
-
-		//Let the scanner's client program know that a PLUS token
-		// has been matched
-		return tokenKind;
-		} //2}}}
-
-"-" { //{{{2
-		//Essentially the same thing as CROSS, but without the verbose
-		// comments so it doesn't look so scary.
-		int tokenKind = TokenKind::DASH;
-		Position * pos = new Position(
-			lineNum, colNum, lineNum, colNum+1);
-		this->yylval->lexeme = new Token(pos, tokenKind);
-		colNum++;
+		colNum = colNum+offset;
 		return tokenKind;
 		} //2}}}
 
