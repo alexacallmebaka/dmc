@@ -14,6 +14,9 @@
 /* Exclude unistd.h for Visual Studio compatability. */
 #define YY_NO_UNISTD_H
 
+/* max int size */
+#define INTMAX 2147483647
+
 /* typedef to make the reference to token kinds shorter */
 using TokenKind = drewno_mars::Parser::token;
 
@@ -84,25 +87,39 @@ DIGIT [0-9]
 {DIGIT}+	{
 		//TODO: The following computation of the integer
 		// value does not check for overflow. It should do so.
-		int intVal = atoi(yytext);
 
 
-		//Note that the IntLitToken does not take a TokenKind argument
-		// since it's implicitly known that the token represents an
-		// INTLITERAL		
-		Position * pos = new Position(
-			lineNum, colNum, lineNum, colNum+strlen(yytext));
-		yylval->lexeme = new IntLitToken(pos, intVal);
+    //Note that the IntLitToken does not take a TokenKind argument
+    // since it's implicitly known that the token represents an
+    // INTLITERAL		
+    Position * pos = new Position(
+      lineNum, colNum, lineNum, colNum+strlen(yytext));
+    
+    /*if the int is big enough c++'s int will overflow so we
+    use a long long for the best safety possible. */  
+    long long longIntVal = std::strtoll(yytext, nullptr, 10);
+    if (longIntVal > INTMAX) {
+      std::string msg = "Integer literal overflow.";
+      Report::fatal(pos,msg);
+      yylval->lexeme = new IntLitToken(pos, 0);
+    }
+
+    else {
+      int intVal = atoi(yytext);
+
+      yylval->lexeme = new IntLitToken(pos, intVal);
+    }
 
 		//TODO: update the colNum count according to the number of
 		// characters consumed. 
+    colNum = colNum+strlen(yytext);
 
 		//As before, alert the client program that an INTLITERAL 
 		// token was matched
 		return TokenKind::INTLITERAL;
 		}
 
-\n		{
+\n	{
 		//Update the line number, reset the columnNumber
 		lineNum++;
 		colNum = 1;
