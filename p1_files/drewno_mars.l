@@ -35,7 +35,25 @@ DIGIT [0-9]
             yylval = lval;
 %}
 
-"+"		{
+and { //{{{2
+		int tokenKind = TokenKind::AND;
+		Position * pos = new Position(
+			lineNum, colNum, lineNum, colNum+3);
+		this->yylval->lexeme = new Token(pos, tokenKind);
+		colNum = colNum+3;
+		return tokenKind;
+		} //2}}}
+
+24Kmagic { //{{{2
+		int tokenKind = TokenKind::MAGIC;
+		Position * pos = new Position(
+			lineNum, colNum, lineNum, colNum+8);
+		this->yylval->lexeme = new Token(pos, tokenKind);
+		colNum = colNum+8;
+		return tokenKind;
+		} //2}}}
+
+"+"		{ //{{{2
 		// Keep track of the "kind" of token we matched. In this case,
 		// it's a CROSS (aka the plus symbol). The full list of token
 		// kinds is declared around line 197 of grammar.hh. The testing
@@ -71,9 +89,9 @@ DIGIT [0-9]
 		//Let the scanner's client program know that a PLUS token
 		// has been matched
 		return tokenKind;
-		}
+		} //2}}}
 
-"-" {
+"-" { //{{{2
 		//Essentially the same thing as CROSS, but without the verbose
 		// comments so it doesn't look so scary.
 		int tokenKind = TokenKind::DASH;
@@ -82,9 +100,9 @@ DIGIT [0-9]
 		this->yylval->lexeme = new Token(pos, tokenKind);
 		colNum++;
 		return tokenKind;
-		}
+		} //2}}}
 
-{DIGIT}+	{
+{DIGIT}+	{ //{{{2
 		//TODO: The following computation of the integer
 		// value does not check for overflow. It should do so.
 
@@ -117,16 +135,16 @@ DIGIT [0-9]
 		//As before, alert the client program that an INTLITERAL 
 		// token was matched
 		return TokenKind::INTLITERAL;
-		}
+		} //2}}}
 
-\n	{
+\n	{ //{{{2
 		//Update the line number, reset the columnNumber
 		lineNum++;
 		colNum = 1;
-		}
+		} //2}}}
 
 
-.   {
+.   { //{{{2
 		//TODO: Add the rest of the rules above this point so that legal characters
 		// are properly accounted for. 
 		std::string msg = "Illegal character ";
@@ -135,5 +153,5 @@ DIGIT [0-9]
 			lineNum, colNum, lineNum, colNum+1);
 		Report::fatal(pos,msg);
 		colNum += strlen(yytext);
-    }
+    } //2}}}
 %%
