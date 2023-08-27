@@ -47,10 +47,6 @@ STRING \"[A-Za-z0-9 \n\t\"!@#$%^&*()<>,.{}[\]`~_\-+=|?/]*\"
             yylval = lval;
 %}
 
-"+" { basicToken(CROSS) }
-- { basicToken(DASH) }
-
-bool { basicToken(BOOL) }
 and { basicToken(AND) }
 24Kmagic { basicToken(MAGIC) }
 else { basicToken(ELSE) }
@@ -67,6 +63,30 @@ true { basicToken(TRUE) }
 void { basicToken(VOID) }
 while { basicToken(WHILE) }
 class { basicToken(CLASS) }
+bool { basicToken(BOOL) }
+
+
+= { basicToken(ASSIGN) }
+: { basicToken(COLON) }
+, { basicToken(COMMA) }
+"+" { basicToken(CROSS) }
+- { basicToken(DASH) }
+== { basicToken(EQUALS) }
+> { basicToken(GREATER) }
+>= { basicToken(GREATEREQ) }
+"{" { basicToken(LCURLY) }
+"<" { basicToken(LESS) }
+"<=" { basicToken(LESSEQ) }
+"(" { basicToken(LPAREN) }
+! { basicToken(NOT) }
+!= { basicToken(NOTEQUALS) }
+-- { basicToken(POSTDEC) }
+"++" { basicToken(POSTINC) }
+"}" { basicToken(RCURLY) }
+")" { basicToken(RPAREN) }
+; { basicToken(SEMICOL) }
+"/" { basicToken(SLASH) }
+"*" { basicToken(STAR) }
 
 {DIGIT}+	{ //{{{2
     //Note that the IntLitToken does not take a TokenKind argument
@@ -106,11 +126,10 @@ class { basicToken(CLASS) }
     return TokenKind::ID;
   }
 
-[//].* {
-				// ignore comment
-	}
+[//].* { // ignore comment
+       }
 
- {
+STRING {
   std::string stringVal = yytext;
     Position * pos = new Position(
       lineNum, colNum, lineNum, colNum+strlen(yytext));
@@ -118,6 +137,8 @@ class { basicToken(CLASS) }
     colNum += strlen(yytext);
     return TokenKind::STRINGLITERAL;
 }
+
+[\t ] { colNum++; }
 
 \n	{ //{{{2
 		//Update the line number, reset the columnNumber
