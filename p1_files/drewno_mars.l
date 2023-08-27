@@ -140,14 +140,24 @@ bool { basicToken(BOOL) }
 		Position * pos = new Position(
 			lineNum, colNum, lineNum, colNum+offset);
 		Report::fatal(pos,msg);
-		colNum += offset;
+		colNum = 1;
+    lineNum++;
     }
 
-<IN_STR>\\[^nt\"\\] { }
+<IN_STR>{STRING}(\\[^nt\"\\])+{STRING}\" {
+  BEGIN(INITIAL);
+  int offset = strlen(yytext)+1;
+  std::string msg = "String literal with bad escape seqeunce detected";
+  Position * pos = new Position(
+  lineNum, colNum, lineNum, colNum+offset);
+  Report::fatal(pos,msg);
+  colNum += offset;
+  }
+
 
 <IN_STR>{STRING}\" {
   BEGIN(INITIAL);
-  int offset = colNum+strlen(yytext)+2;
+  int offset = colNum+strlen(yytext)+1;
   std::string stringVal = std::string("\"") + yytext;
     Position * pos = new Position(
       lineNum, colNum, lineNum, offset);
