@@ -30,7 +30,7 @@ using TokenKind = drewno_mars::Parser::token;
 
 DIGIT [0-9]
 IDENTIFIER [a-zA-Z_][a-zA-Z0-9_]*
-STRING "([^"]*)"
+STRING [^"]*
 %%
 %{          /** Code executed at the beginning of yylex **/
             yylval = lval;
@@ -104,7 +104,12 @@ bool|and|24Kmagic|"+"|- { //{{{2
     colNum += strlen(yytext);
     yylval->lexeme = new IDToken(pos, idVal);
     return TokenKind::ID;
-}
+  }
+
+[//].* {
+				// ignore comment
+	}
+
 
 
 
