@@ -36,28 +36,41 @@ STRING [^"]*
             yylval = lval;
 %}
 
-bool|and|24Kmagic|"+"|- { //{{{2
+bool|and|24Kmagic|"+"|-|perfect|give|take|"too hot"|class|"today I don't feel like doing any work" { //{{{2
 		int tokenKind;
     
     if(strcmp("bool",yytext) == 0) {
         tokenKind = TokenKind::BOOL;
     }
-
     else if(strcmp("and",yytext) == 0) {
         tokenKind = TokenKind::AND;
-    }
-    
+    }    
     else if(strcmp("24Kmagic",yytext) == 0) {
         tokenKind = TokenKind::MAGIC;
     }
-
     else if(strcmp("+",yytext) == 0) {
         tokenKind = TokenKind::CROSS;
     }
-
-
     else if(strcmp("-",yytext) == 0) {
         tokenKind = TokenKind::DASH;
+    }
+    else if(strcmp("perfect",yytext) == 0) {
+        tokenKind = TokenKind::PERFECT;
+    }
+    else if(strcmp("give",yytext) == 0) {
+        tokenKind = TokenKind::GIVE;
+    }
+    else if(strcmp("take",yytext) == 0) {
+        tokenKind = TokenKind::TAKE;
+    }
+    else if(strcmp("too hot",yytext) == 0) {
+        tokenKind = TokenKind::FALSE;
+    }
+    else if(strcmp("class",yytext) == 0) {
+        tokenKind = TokenKind::CLASS;
+    }
+    else if(strcmp("today I don't feel like doing any work",yytext) == 0) {
+        tokenKind = TokenKind::EXIT;
     }
 
     int offset = strlen(yytext);
