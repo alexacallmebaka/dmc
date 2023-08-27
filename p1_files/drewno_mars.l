@@ -38,9 +38,11 @@ using TokenKind = drewno_mars::Parser::token;
 %option noyywrap
 %option c++
 
+%x IN_STR
+
 DIGIT [0-9]
 IDENTIFIER [a-zA-Z_][a-zA-Z0-9_]*
-STRING \"(\\[nt"\\]|[^\n\t\\])*\"
+STRING (\\[nt\"\\]|[^\n\t\"\\])*
 
 %%
 %{          /** Code executed at the beginning of yylex **/
@@ -129,12 +131,28 @@ bool { basicToken(BOOL) }
 [//].* { // ignore comment
        }
 
-{STRING} {
-  std::string stringVal = yytext;
+\" { BEGIN(IN_STR);}
+
+<IN_STR>{STRING}\n { 
+    BEGIN(INITIAL);
+    int offset = strlen(yytext);
+    std::string msg = "Unterminated string literal detected";
+		Position * pos = new Position(
+			lineNum, colNum, lineNum, colNum+offset);
+		Report::fatal(pos,msg);
+		colNum += offset;
+    }
+
+<IN_STR>\\[^nt\"\\] { }
+
+<IN_STR>{STRING}\" {
+  BEGIN(INITIAL);
+  int offset = colNum+strlen(yytext)+2;
+  std::string stringVal = std::string("\"") + yytext;
     Position * pos = new Position(
-      lineNum, colNum, lineNum, colNum+strlen(yytext));
+      lineNum, colNum, lineNum, offset);
     yylval->lexeme = new StrToken(pos, stringVal);
-    colNum += strlen(yytext);
+    colNum += offset;
     return TokenKind::STRINGLITERAL;
 }
 
@@ -148,8 +166,6 @@ bool { basicToken(BOOL) }
 
 
 .   { //{{{2
-		//TODO: Add the rest of the rules above this point so that legal characters
-		// are properly accounted for. 
 		std::string msg = "Illegal character ";
 		msg += yytext;
 		Position * pos = new Position(
