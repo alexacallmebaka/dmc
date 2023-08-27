@@ -154,6 +154,17 @@ bool { basicToken(BOOL) }
   colNum += offset;
   }
 
+<IN_STR>{STRING}(\\[^nt\"\\])+{STRING}\n {
+  BEGIN(INITIAL);
+  int offset = strlen(yytext);
+  std::string msg = "Unterminated string literal with bad escaped sequence detected";
+  Position * pos = new Position(
+  lineNum, colNum, lineNum, colNum+offset);
+  Report::fatal(pos,msg);
+  colNum = 1;
+  lineNum++;
+  }
+
 
 <IN_STR>{STRING}\" {
   BEGIN(INITIAL);
