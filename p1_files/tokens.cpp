@@ -48,6 +48,8 @@ static std::string tokenKindString(int tokKind){
 		case TokenKind::TRUE: return "TRUE";
 		case TokenKind::VOID: return "VOID";
 		case TokenKind::WHILE: return "WHILE";
+		case TokenKind::GIVE: return "GIVE";
+		case TokenKind::TAKE: return "TAKE";
 		default:
 			return "OTHER"; //This should never happen
 	}
