@@ -29,7 +29,8 @@ using TokenKind = drewno_mars::Parser::token;
 %option c++
 
 DIGIT [0-9]
-
+IDENTIFIER [a-zA-Z_][a-zA-Z0-9_]*
+STRING "([^"]*)"
 %%
 %{          /** Code executed at the beginning of yylex **/
             yylval = lval;
@@ -95,6 +96,17 @@ bool|and|24Kmagic|"+"|- { //{{{2
 		// token was matched
 		return TokenKind::INTLITERAL;
 		} //2}}}
+
+{IDENTIFIER}+   {
+    std::string idVal = yytext;
+    Position * pos = new Position(
+      lineNum, colNum, lineNum, colNum+strlen(yytext));
+    colNum += strlen(yytext);
+    yylval->lexeme = new IDToken(pos, idVal);
+    return TokenKind::ID;
+}
+
+
 
 \n	{ //{{{2
 		//Update the line number, reset the columnNumber
