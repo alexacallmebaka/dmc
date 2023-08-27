@@ -46,11 +46,26 @@ STRING "([^"]*)"
             yylval = lval;
 %}
 
+"+" { basicToken(CROSS) }
+- { basicToken(DASH) }
+
 bool { basicToken(BOOL) }
 and { basicToken(AND) }
 24Kmagic { basicToken(MAGIC) }
-"+" { basicToken(CROSS) }
-- { basicToken(DASH) }
+else { basicToken(ELSE) }
+false|"too hot" { basicToken(FALSE) }
+if { basicToken(IF) }
+int { basicToken(INT) }
+give { basicToken(GIVE) }
+take { basicToken(TAKE) }
+or { basicToken(OR) }
+perfect { basicToken(PERFECT) }
+return { basicToken(RETURN) }
+true { basicToken(TRUE) }
+"today I don't feel like doing any work" { basicToken(EXIT) }
+void { basicToken(VOID) }
+while { basicToken(WHILE) }
+class { basicToken(CLASS) }
 
 {DIGIT}+	{ //{{{2
     //Note that the IntLitToken does not take a TokenKind argument
