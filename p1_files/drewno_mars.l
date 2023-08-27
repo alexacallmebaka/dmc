@@ -40,7 +40,8 @@ using TokenKind = drewno_mars::Parser::token;
 
 DIGIT [0-9]
 IDENTIFIER [a-zA-Z_][a-zA-Z0-9_]*
-STRING "([^"]*)"
+STRING \"[A-Za-z0-9 \n\t\"!@#$%^&*()<>,.{}[\]`~_\-+=|?/]*\"
+
 %%
 %{          /** Code executed at the beginning of yylex **/
             yylval = lval;
@@ -103,9 +104,20 @@ class { basicToken(CLASS) }
     colNum += strlen(yytext);
     yylval->lexeme = new IDToken(pos, idVal);
     return TokenKind::ID;
+  }
+
+[//].* {
+				// ignore comment
+	}
+
+ {
+  std::string stringVal = yytext;
+    Position * pos = new Position(
+      lineNum, colNum, lineNum, colNum+strlen(yytext));
+    yylval->lexeme = new StrToken(pos, stringVal);
+    colNum += strlen(yytext);
+    return TokenKind::STRINGLITERAL;
 }
-
-
 
 \n	{ //{{{2
 		//Update the line number, reset the columnNumber
