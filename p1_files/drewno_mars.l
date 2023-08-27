@@ -40,7 +40,7 @@ using TokenKind = drewno_mars::Parser::token;
 
 DIGIT [0-9]
 IDENTIFIER [a-zA-Z_][a-zA-Z0-9_]*
-STRING \"[A-Za-z0-9 \n\t\"!@#$%^&*()<>,.{}[\]`~_\-+=|?/]*\"
+STRING \"(\\[nt"\\]|[^\n\t\\])*\"
 
 %%
 %{          /** Code executed at the beginning of yylex **/
@@ -129,7 +129,7 @@ bool { basicToken(BOOL) }
 [//].* { // ignore comment
        }
 
-STRING {
+{STRING} {
   std::string stringVal = yytext;
     Position * pos = new Position(
       lineNum, colNum, lineNum, colNum+strlen(yytext));
