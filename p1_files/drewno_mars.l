@@ -128,60 +128,56 @@ bool { basicToken(BOOL) }
     return TokenKind::ID;
   }
 
-\" { BEGIN(IN_STR);}
-
-<IN_STR>{STRING}\n { 
-    BEGIN(INITIAL);
-    int offset = strlen(yytext);
+\"{STRING} {
+  int offset = strlen(yytext);
     std::string msg = "Unterminated string literal detected";
 		Position * pos = new Position(
 			lineNum, colNum, lineNum, colNum+offset);
+    colNum += strlen(yytext);
 		Report::fatal(pos,msg);
-		colNum = 1;
-    lineNum++;
-    }
+}
 
-<IN_STR>{STRING}(\\[^nt\"\\])+{STRING}\" {
-  BEGIN(INITIAL);
+\"{STRING}(\\[^nt\"\\])+{STRING}\" {
   int offset = strlen(yytext)+1;
   std::string msg = "String literal with bad escape sequence detected";
   Position * pos = new Position(
   lineNum, colNum, lineNum, colNum+offset);
+  colNum += strlen(yytext);
   Report::fatal(pos,msg);
-  colNum += offset;
   }
 
-<IN_STR>{STRING}(\\[^nt\"\\])+{STRING}\n {
-  BEGIN(INITIAL);
+\"{STRING}(\\[^nt\"\\])+{STRING} {
   int offset = strlen(yytext);
   std::string msg = "Unterminated string literal with bad escaped sequence detected";
   Position * pos = new Position(
   lineNum, colNum, lineNum, colNum+offset);
+  colNum += strlen(yytext);
   Report::fatal(pos,msg);
-  colNum = 1;
-  lineNum++;
   }
 
 
-<IN_STR>{STRING}\" {
+\"{STRING}\" {
   BEGIN(INITIAL);
   int offset = colNum+strlen(yytext);
   std::string stringVal = std::string("\"") + yytext;
     Position * pos = new Position(
       lineNum, colNum, lineNum, offset);
     yylval->lexeme = new StrToken(pos, stringVal);
-    colNum += offset;
     return TokenKind::STRINGLITERAL;
 }
 
 [\t ] { colNum++; }
+[ ]+	{ }
 
-([//].*)?\n	{ //{{{2
+[//].*	{
+		//ignore
+	}
+
+\n	{
 		//Update the line number, reset the columnNumber
 		lineNum++;
 		colNum = 1;
-		} //2}}}
-
+}
 
 .   { //{{{2
 		std::string msg = "Illegal character ";
