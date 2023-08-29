@@ -133,7 +133,7 @@ bool { basicToken(BOOL) }
     std::string msg = "Unterminated string literal detected";
 		Position * pos = new Position(
 			lineNum, colNum, lineNum, colNum+offset);
-    colNum += strlen(yytext);
+    colNum += offset;
 		Report::fatal(pos,msg);
 }
 
@@ -142,7 +142,7 @@ bool { basicToken(BOOL) }
   std::string msg = "String literal with bad escape sequence detected";
   Position * pos = new Position(
   lineNum, colNum, lineNum, colNum+offset);
-  colNum += strlen(yytext);
+  colNum += offset;
   Report::fatal(pos,msg);
   }
 
@@ -151,7 +151,7 @@ bool { basicToken(BOOL) }
   std::string msg = "Unterminated string literal with bad escaped sequence detected";
   Position * pos = new Position(
   lineNum, colNum, lineNum, colNum+offset);
-  colNum += strlen(yytext);
+  colNum += offset;
   Report::fatal(pos,msg);
   }
 
@@ -163,11 +163,11 @@ bool { basicToken(BOOL) }
     Position * pos = new Position(
       lineNum, colNum, lineNum, offset);
     yylval->lexeme = new StrToken(pos, stringVal);
+    colNum += offset;
     return TokenKind::STRINGLITERAL;
 }
 
 [\t ] { colNum++; }
-[ ]+	{ }
 
 [//].*	{
 		//ignore
