@@ -128,9 +128,6 @@ bool { basicToken(BOOL) }
     return TokenKind::ID;
   }
 
-[//].* { // ignore comment
-       }
-
 \" { BEGIN(IN_STR);}
 
 <IN_STR>{STRING}\n { 
@@ -147,7 +144,7 @@ bool { basicToken(BOOL) }
 <IN_STR>{STRING}(\\[^nt\"\\])+{STRING}\" {
   BEGIN(INITIAL);
   int offset = strlen(yytext)+1;
-  std::string msg = "String literal with bad escape seqeunce detected";
+  std::string msg = "String literal with bad escape sequence detected";
   Position * pos = new Position(
   lineNum, colNum, lineNum, colNum+offset);
   Report::fatal(pos,msg);
@@ -168,7 +165,7 @@ bool { basicToken(BOOL) }
 
 <IN_STR>{STRING}\" {
   BEGIN(INITIAL);
-  int offset = colNum+strlen(yytext)+1;
+  int offset = colNum+strlen(yytext);
   std::string stringVal = std::string("\"") + yytext;
     Position * pos = new Position(
       lineNum, colNum, lineNum, offset);
@@ -179,7 +176,7 @@ bool { basicToken(BOOL) }
 
 [\t ] { colNum++; }
 
-\n	{ //{{{2
+([//].*)?\n	{ //{{{2
 		//Update the line number, reset the columnNumber
 		lineNum++;
 		colNum = 1;
