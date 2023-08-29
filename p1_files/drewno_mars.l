@@ -128,9 +128,6 @@ bool { basicToken(BOOL) }
     return TokenKind::ID;
   }
 
-[//].* { // ignore comment
-       }
-
 \" { BEGIN(IN_STR);}
 
 <IN_STR>{STRING}\n { 
@@ -179,7 +176,7 @@ bool { basicToken(BOOL) }
 
 [\t ] { colNum++; }
 
-\n	{ //{{{2
+([//].*)?\n	{ //{{{2
 		//Update the line number, reset the columnNumber
 		lineNum++;
 		colNum = 1;
