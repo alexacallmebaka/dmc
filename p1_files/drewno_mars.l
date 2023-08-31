@@ -159,10 +159,9 @@ bool { basicToken(BOOL) }
 \"{STRING}\" {
   BEGIN(INITIAL);
   int offset = colNum+strlen(yytext);
-  std::string stringVal = std::string("\"") + yytext;
     Position * pos = new Position(
       lineNum, colNum, lineNum, offset);
-    yylval->lexeme = new StrToken(pos, stringVal);
+    yylval->lexeme = new StrToken(pos, yytext);
     colNum += offset;
     return TokenKind::STRINGLITERAL;
 }
