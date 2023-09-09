@@ -121,6 +121,17 @@ project)
  * declarations
  */
 
+%right ASSIGN
+%left AND
+%left OR
+%nonassoc LESS LESSEQ GREATER GREATEREQ NOTEQUALS EQUALS
+%left DASH
+%left CROSS
+%left STAR
+%left SLASH
+%left NOT
+
+
 %%
 
 program 		: globals
