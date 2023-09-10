@@ -139,14 +139,14 @@ program 		: globals { }
 globals 		: globals decl { }
 						| /* epsilon */ { }
 
-decl 				: varDecl SEMICOL { }
+decl 				: varDecl { }
 						| classDecl { }
 						| fnDecl { }
 
-varDecl 		: id COLON type { /* There are other rules for varDecl to add as well */ }
-						| id COLON type ASSIGN exp { }
+varDecl 		: id COLON type SEMICOL { }
+						| id COLON type ASSIGN exp SEMICOL { }
 
-	type			: primType { }
+type			  : primType { }
 						| PERFECT primType { }
 						| id { }
 						| PERFECT id { }
@@ -226,8 +226,6 @@ loc					: id { }
 						| loc POSTDEC id { }
 
 id					: ID { }
- /* TODO: add productions for the entire grammar of the language */
-	
 %%
 
 void drewno_mars::Parser::error(const std::string& msg){
@@ -235,6 +233,6 @@ void drewno_mars::Parser::error(const std::string& msg){
 	// correctness. You might choose to uncomment the following
 	// Line to help you debug, since it gives slightly more 
 	// descriptive error messages 
-	//std::cout << msg << std::endl;
+	std::cout << msg << std::endl;
 	std::cerr << "syntax error" << std::endl;
 }
