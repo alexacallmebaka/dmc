@@ -134,10 +134,7 @@ project)
 
 %%
 
-program 		: globals
-							{
-								std::cout << "got to the program ::= globals rule\n";
-							}
+program 		: globals { }
 
 globals 		: globals decl { }
 						| /* epsilon */ { }
@@ -239,5 +236,5 @@ void drewno_mars::Parser::error(const std::string& msg){
 	// Line to help you debug, since it gives slightly more 
 	// descriptive error messages 
 	//std::cout << msg << std::endl;
-	std::cerr << "syntax error\nParse failed" << std::endl;
+	std::cerr << "syntax error" << std::endl;
 }
