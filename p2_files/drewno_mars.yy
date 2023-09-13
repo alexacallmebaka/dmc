@@ -233,6 +233,6 @@ void drewno_mars::Parser::error(const std::string& msg){
 	// correctness. You might choose to uncomment the following
 	// Line to help you debug, since it gives slightly more 
 	// descriptive error messages 
-	std::cout << msg << std::endl;
+	//std::cout << msg << std::endl;
 	std::cerr << "syntax error" << std::endl;
 }
