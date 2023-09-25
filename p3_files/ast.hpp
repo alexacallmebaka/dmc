@@ -14,10 +14,82 @@ namespace drewno_mars{
 /* You may find it useful to forward declare AST subclasses
    here so that you can use a class before it's full definition
 */
-class DeclNode;
-class TypeNode;
+
+//subclasses of ASTNode {{{1
+class ExpNode;
+class ProgramNode;
 class StmtNode;
+class TypeNode;
+//1}}}
+
+//subclasses of ExpNode {{{2
+class BinaryExpNode;
+class CallExpNode;
+class FalseNode;
+class IntLitNode;
+class LocNode;
+class StrLitNode;
+class TrueNode;
+class UnaryExpNode;
+//2}}}
+
+//subclasses of StmtNode {{{1
+class AssignStmtNode;
+class CallStmtNode;
+class DeclNode;
+class ExitStmtNode;
+class GiveStmtNode;
+class IfElseStmtNode;
+class IfStmtNode;
+class PostDecStmtNode;
+class PostIncStmtNode;
+class ReturnStmtNode;
+class TakeStmtNode;
+class WhileStmtNode;
+//1}}}
+
+//subclasses of TypeNode {{{1
+class BoolTypeNode;
+class ClassTypeNode;
+class IntTypeNode;
+class PerfectTypeNode;
+class VoidTypeNode;
+//1}}}
+
+//subclasses of BinaryExpNode {{{1
+class AndNode;
+class DivideNode;
+class EqualsNode;
+class GreaterEqNode;
+class GreaterNode;
+class LessEqNode;
+class LessNode;
+class MinusNode;
+class NotEqualsNode;
+class OrNode;
+class PlusNode;
+class TimesNode;
+//1}}}
+
+//subclasses of LocNode {{{1
 class IDNode;
+class MemberFieldExpNode;
+//1}}}
+
+//subclasses of UnaryExpNode {{{1
+class NegNode;
+class NotNode;
+//1}}}
+
+//subclasses of DeclNode {{{1
+class ClassDefnNode;
+class FnDeclNode;
+class VarDeclNode;
+//1}}}
+
+//subclasses of VarDeclNode {{{1
+class FormalDeclNode;
+//1}}}
 
 /** 
 * \class ASTNode
