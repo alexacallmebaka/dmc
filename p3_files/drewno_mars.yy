@@ -213,6 +213,7 @@ primType 	: INT
 		  }
 		| VOID
 		  {
+		  $$ = new VoidTypeNode($1->pos());
 		  }
 
 classDecl	: id COLON CLASS LCURLY classBody RCURLY SEMICOL

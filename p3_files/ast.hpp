@@ -160,13 +160,6 @@ public:
 	virtual void unparse(std::ostream& out, int indent) = 0;
 };
 
-class PerfectTypeNode : public TypeNode{
-  public:
-    PerfectTypeNode(const Position *p, TypeNode * inType) : TypeNode(p), myType(inType){ }
-    void unparse(std::ostream& out, int indent);
-   private:
-    TypeNode * myType;
-};
 
 /** A memory location. LocNodes subclass ExpNode
  * because they can be used as part of an expression. 
@@ -207,6 +200,14 @@ private:
 	TypeNode * myType;
 };
 
+class PerfectTypeNode : public TypeNode{
+  public:
+    PerfectTypeNode(const Position *p, TypeNode * inType) : TypeNode(p), myType(inType){ }
+    void unparse(std::ostream& out, int indent);
+   private:
+    TypeNode * myType;
+};
+
 class IntTypeNode : public TypeNode{
 public:
 	IntTypeNode(const Position * p) : TypeNode(p){ }
@@ -217,6 +218,18 @@ public:
 class BoolTypeNode : public TypeNode{
 public:
 	BoolTypeNode(const Position * p) : TypeNode(p){ }
+	void unparse(std::ostream& out, int indent);
+};
+
+class VoidTypeNode : public TypeNode{
+public:
+	VoidTypeNode(const Position * p) : TypeNode(p){ }
+	void unparse(std::ostream& out, int indent);
+};
+
+class ClassTypeNode : public TypeNode{
+public:
+	ClassTypeNode(const Position * p) : TypeNode(p){ }
 	void unparse(std::ostream& out, int indent);
 };
 

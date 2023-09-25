@@ -66,4 +66,8 @@ void BoolTypeNode::unparse(std::ostream& out, int indent){
 	out << "bool";
 }
 
+void VoidTypeNode::unparse(std::ostream& out, int indent){
+	out << "void";
+}
+
 } // End namespace drewno_mars
