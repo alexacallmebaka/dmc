@@ -195,6 +195,9 @@ type		: primType
 		  }
 		| PERFECT primType
 		  {
+		  const Position * p;
+		  p = new Position($1->pos(), $2->pos());
+      $$ = new PerfectTypeNode(p, $2);
 		  }
 		| PERFECT id
 		  {
@@ -206,6 +209,7 @@ primType 	: INT
 		  }
 		| BOOL
 		  {
+		  $$ = new BoolTypeNode($1->pos());
 		  }
 		| VOID
 		  {

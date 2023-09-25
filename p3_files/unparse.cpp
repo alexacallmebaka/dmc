@@ -52,8 +52,18 @@ void IDNode::unparse(std::ostream& out, int indent){
 	out << this->name;
 }
 
+void PerfectTypeNode::unparse(std::ostream& out, int indent){
+	doIndent(out, indent);
+	out << "perfect ";
+  this->myType->unparse(out, 0);
+}
+
 void IntTypeNode::unparse(std::ostream& out, int indent){
 	out << "int";
+}
+
+void BoolTypeNode::unparse(std::ostream& out, int indent){
+	out << "bool";
 }
 
 } // End namespace drewno_mars
