@@ -184,7 +184,6 @@ private:
 	std::string name;
 };
 
- 
 /** A variable declaration.
 **/
 class VarDeclNode : public DeclNode{
@@ -194,10 +193,17 @@ public:
 		assert (myType != nullptr);
 		assert (myID != nullptr);
 	}
+  VarDeclNode(const Position * p, IDNode * inID, TypeNode * inType, ExpNode * inVal) 
+  : DeclNode(p), myID(inID), myType(inType), myVal(inVal){
+		assert (myType != nullptr);
+		assert (myID != nullptr);
+		assert (myVal != nullptr);
+  }
 	void unparse(std::ostream& out, int indent);
 private:
 	IDNode * myID;
 	TypeNode * myType;
+  ExpNode * myVal; //unassigned vars will initialize to null.
 };
 
 class PerfectTypeNode : public TypeNode{
@@ -231,6 +237,14 @@ class ClassTypeNode : public TypeNode{
 public:
 	ClassTypeNode(const Position * p) : TypeNode(p){ }
 	void unparse(std::ostream& out, int indent);
+};
+
+class IntLitNode : public ExpNode{
+public:
+  IntLitNode(const Position *p, const int inVal) : ExpNode(p), myVal(inVal) { }
+	void unparse(std::ostream& out, int indent);
+private:
+  int myVal;
 };
 
 } //End namespace drewno_mars

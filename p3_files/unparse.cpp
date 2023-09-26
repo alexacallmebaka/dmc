@@ -43,8 +43,12 @@ void ProgramNode::unparse(std::ostream& out, int indent){
 void VarDeclNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	this->myID->unparse(out, 0);
-	out << ": ";
+	out << " : ";
 	this->myType->unparse(out, 0);
+  if (this->myVal) {
+    out << " = ";
+    this->myVal->unparse(out,0);
+  }
 	out << ";\n";
 }
 
@@ -68,6 +72,10 @@ void BoolTypeNode::unparse(std::ostream& out, int indent){
 
 void VoidTypeNode::unparse(std::ostream& out, int indent){
 	out << "void";
+}
+
+void IntLitNode::unparse(std::ostream& out, int indent){
+  out << this->myVal;
 }
 
 } // End namespace drewno_mars

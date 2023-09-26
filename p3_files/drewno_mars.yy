@@ -60,6 +60,7 @@ project)
    drewno_mars::Token*                         transToken;
    drewno_mars::Token*                         lexeme;
    drewno_mars::IDToken*                       transIDToken;
+   drewno_mars::IntLitToken*                   transIntToken;
    drewno_mars::ProgramNode*                   transProgram;
    drewno_mars::DeclNode *                     transDecl;
    std::list<drewno_mars::DeclNode *> *        transDeclList;
@@ -67,6 +68,7 @@ project)
    drewno_mars::TypeNode *                     transType;
    drewno_mars::LocNode *                      transLoc;
    drewno_mars::IDNode *                       transID;
+   drewno_mars::ExpNode *                      transExp;
 }
 
 %define parse.assert
@@ -141,6 +143,8 @@ project)
 %type <transType> primType
 %type <transLoc> loc
 %type <transID> id
+%type <transExp> exp
+%type <transExp> term
 
 %right ASSIGN
 %left OR
@@ -184,6 +188,9 @@ varDecl 	: id COLON type
 		  }
 		| id COLON type ASSIGN exp
 		  {
+		  const Position * p;
+		  p = new Position($1->pos(), $2->pos());
+		  $$ = new VarDeclNode(p, $1, $3, $5);
 		  }
 
 type		: primType
@@ -347,6 +354,7 @@ exp		: exp DASH exp
 		  }
 		| term
 	  	  {
+        $$ = $1;
 		  }
 
 callExp		: loc LPAREN RPAREN
@@ -368,6 +376,8 @@ term 		: loc
 		  }
 		| INTLITERAL 
 		  {
+		  const Position * p = $1->pos();
+      $$ = new IntLitNode(p, $1->num());
 		  }
 		| STRINGLITERAL 
 		  {
