@@ -1,4 +1,4 @@
-TESTFILES := $(wildcard *.dm)
+TESTFILES := $(wildcard */*.dm)
 TESTS := $(TESTFILES:.dm=.test)
 
 .PHONY: all
@@ -21,4 +21,4 @@ all: $(TESTS)
 	exit $$STDOUT_DIFF_EXIT || echo "Tests passed"
 
 clean:
-	rm -f *.unparse *.err
+	rm -f */*.unparse */*.err
