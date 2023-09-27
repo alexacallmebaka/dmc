@@ -1,3 +1,4 @@
+/* preamble {{{1*/
 %skeleton "lalr1.cc"
 %require "3.0"
 %debug
@@ -47,7 +48,10 @@
   #undef yylex
   #define yylex scanner.yylex
 }
+/*end preamble 1}}}*/
 
+/*types {{{1*/
+/*typedefs (union) {{{2*/
 /*
 The %union directive is a way to specify the 
 set of possible types that might be used as
@@ -56,6 +60,7 @@ For this project, only terminals have types (we'll
 have translation attributes for non-terminals in the next
 project)
 */
+
 %union {
    drewno_mars::Token*                         transToken;
    drewno_mars::Token*                         lexeme;
@@ -69,10 +74,12 @@ project)
    drewno_mars::LocNode *                      transLoc;
    drewno_mars::IDNode *                       transID;
    drewno_mars::ExpNode *                      transExp;
+   drewno_mars::StmtNode *                     transStmt;
 }
-
+/*end typedefs 2}}}*/
 %define parse.assert
 
+/* types of terminals {{{2*/
 /* Terminals 
  *  No need to touch these, but do note the translation type
  *  of each node. Most are just "transToken", which is defined in
@@ -123,8 +130,9 @@ project)
 %token	<transToken>     TRUE
 %token	<transToken>     VOID
 %token	<transToken>     WHILE
+/*end terminal types 2}}}*/
 
-
+/*types of nonterminals {{{2*/
 /* Nonterminals
 *  The specifier in angle brackets
 *  indicates the type of the translation attribute using
@@ -145,7 +153,11 @@ project)
 %type <transID> id
 %type <transExp> exp
 %type <transExp> term
+%type <transStmt> stmt
+/*end types of nonterminals 2}}}*/
+/*end types 1}}}*/
 
+/*associativity {{{1*/
 %right ASSIGN
 %left OR
 %left AND
@@ -153,6 +165,7 @@ project)
 %left DASH CROSS
 %left STAR SLASH
 %left NOT 
+/* end associativity 1}}}*/
 
 %%
 
@@ -281,6 +294,7 @@ blockStmt	: WHILE LPAREN exp RPAREN LCURLY stmtList RCURLY
 
 stmt		: varDecl
 		  {
+      $$ = $1;
 		  }
 		| loc ASSIGN exp
 		  {
