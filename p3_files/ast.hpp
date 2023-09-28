@@ -263,6 +263,19 @@ public:
 	void unparse(std::ostream& out, int indent);
 };
 
+class WhileStmtNode : public StmtNode{
+public:
+  WhileStmtNode(const Position *p, ExpNode * inExp, std::list< StmtNode * > * inBody)
+    : StmtNode(p), myExp(inExp), myBody(inBody) {
+		assert (myExp != nullptr);
+		assert (myBody != nullptr);
+    };
+	void unparse(std::ostream& out, int indent);
+private:
+  ExpNode * myExp;
+  std::list< StmtNode * > * myBody;
+};
+
 class IntLitNode : public ExpNode{
 public:
   IntLitNode(const Position *p, const int inVal) : ExpNode(p), myVal(inVal) { }

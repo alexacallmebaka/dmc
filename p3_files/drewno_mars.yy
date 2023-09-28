@@ -158,6 +158,7 @@ project)
 %type <transExp> exp
 %type <transExp> term
 %type <transStmt> stmt
+%type <transStmt> blockStmt
 %type <transFnDecl> fnDecl
 %type <transFormalDeclList> formals
 %type <transFormalDeclList> formalsList
@@ -300,13 +301,19 @@ stmtList 	: /* epsilon */
 	   	  }
 		| stmtList stmt SEMICOL
 	  	  {
+        $1->push_back($2);
+        $$ = $1;
 	  	  }
 		| stmtList blockStmt
 	  	  {
+        $1->push_back($2);
+        $$ = $1;
 	  	  }
 
 blockStmt	: WHILE LPAREN exp RPAREN LCURLY stmtList RCURLY
 		  {
+      const Position * p = $1->pos();
+      $$ = new WhileStmtNode(p, $3, $6);
 		  }
 		| IF LPAREN exp RPAREN LCURLY stmtList RCURLY
 		  {
