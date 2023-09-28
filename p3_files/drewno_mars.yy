@@ -317,6 +317,8 @@ blockStmt	: WHILE LPAREN exp RPAREN LCURLY stmtList RCURLY
 		  }
 		| IF LPAREN exp RPAREN LCURLY stmtList RCURLY
 		  {
+      const Position * p = $1->pos();
+      $$ = new IfStmtNode(p, $3, $6);
 		  }
 		| IF LPAREN exp RPAREN LCURLY stmtList RCURLY ELSE LCURLY stmtList RCURLY
 		  {

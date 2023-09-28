@@ -118,4 +118,16 @@ void WhileStmtNode::unparse(std::ostream& out, int indent){
   out << "}\n";
 }
 
+void IfStmtNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  out << "if (";
+  myExp->unparse(out, 0);
+  out << "){\n";
+  for ( StmtNode * stmt : *(this->myBody) ) {
+    stmt->unparse(out, indent+4);
+    out << "\n";
+  }
+  out << "}\n";
+}
+
 } // End namespace drewno_mars
