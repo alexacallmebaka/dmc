@@ -75,6 +75,10 @@ project)
    drewno_mars::IDNode *                       transID;
    drewno_mars::ExpNode *                      transExp;
    drewno_mars::StmtNode *                     transStmt;
+   drewno_mars::FnDeclNode *                   transFnDecl;
+   drewno_mars::FormalDeclNode *               transFormalDecl;
+   std::list<drewno_mars::FormalDeclNode *> *  transFormalDeclList;
+   std::list<drewno_mars::StmtNode *> *  transStmtList;
 }
 /*end typedefs 2}}}*/
 %define parse.assert
@@ -154,6 +158,11 @@ project)
 %type <transExp> exp
 %type <transExp> term
 %type <transStmt> stmt
+%type <transFnDecl> fnDecl
+%type <transFormalDeclList> formals
+%type <transFormalDeclList> formalsList
+%type <transFormalDecl> formalDecl
+%type <transStmtList> stmtList
 /*end types of nonterminals 2}}}*/
 /*end types 1}}}*/
 
@@ -191,7 +200,9 @@ decl 		: varDecl SEMICOL
 		  $$ = $1;
 		  }
  		| classDecl { }
- 		| fnDecl { }
+ 		| fnDecl {
+    $$ = $1;
+    }
 
 varDecl 	: id COLON type
 		  {
@@ -252,28 +263,40 @@ classBody	: classBody varDecl SEMICOL
 
 fnDecl  : id COLON LPAREN formals RPAREN type LCURLY stmtList RCURLY
 		  {
+      const Position * p = $1->pos();
+      $$ = new FnDeclNode(p, $6, $1, $4, $8); 
 		  }
 
 formals 	: /* epsilon */
 		  {
+      $$ = new std::list< FormalDeclNode * >;
 		  }
 		| formalsList
 		  {
+      $$ = $1;
 		  }
 
 formalsList 	: formalDecl
 		  {
+      std::list< FormalDeclNode * > * formals = new std::list< FormalDeclNode * >;
+      formals->push_back($1);
+      $$ = formals;
 		  }
 		| formalsList COMMA formalDecl
 		  {
+      $1->push_back($3);
+      $$ = $1;
 		  }
 
 formalDecl 	: id COLON type
 		  {
+      const Position * p = $1->pos();
+      $$ = new FormalDeclNode(p, $3, $1);
 		  }
 
 stmtList 	: /* epsilon */
 	   	  {
+        $$ = new std::list< StmtNode * >;
 	   	  }
 		| stmtList stmt SEMICOL
 	  	  {

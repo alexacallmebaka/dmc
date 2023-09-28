@@ -78,4 +78,32 @@ void IntLitNode::unparse(std::ostream& out, int indent){
   out << this->myVal;
 }
 
+void FnDeclNode::unparse(std::ostream& out, int indent){
+  this->myID->unparse(out, indent);
+  out << " : (";
+  size_t index = 0;
+  for( auto formal : *myParams ) {
+    formal->unparse(out,0);
+    if ( index < this->myParams->size() - 1) {
+      out << ", ";
+      index++;
+    }
+  }
+  out << ") ";
+  this->myRetType->unparse(out,0);
+  out << " {\n";
+  for ( StmtNode * stmt : *(this->myBody) ) {
+    stmt->unparse(out, indent+4);
+    out << "\n";
+  }
+  doIndent(out, indent);
+  out << "}\n";
+}
+
+void FormalDeclNode::unparse(std::ostream& out, int indent){
+  this->myID->unparse(out, 0);
+  out << " : ";
+  this->myType->unparse(out, 0);
+}
+
 } // End namespace drewno_mars

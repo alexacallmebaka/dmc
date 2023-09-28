@@ -200,10 +200,34 @@ public:
 		assert (myVal != nullptr);
   }
 	void unparse(std::ostream& out, int indent);
-private:
+protected:
 	IDNode * myID;
 	TypeNode * myType;
   ExpNode * myVal; //unassigned vars will initialize to null.
+};
+
+class FnDeclNode : public DeclNode{
+  public:
+    FnDeclNode(const Position *p, TypeNode * inRetType, IDNode * inID, std::list< FormalDeclNode *> * inParams, std::list< StmtNode *> * inBody)
+    : DeclNode(p), myRetType(inRetType), myID(inID), myParams(inParams), myBody(inBody) {
+		assert (myRetType != nullptr);
+		assert (myID != nullptr);
+		assert (myParams != nullptr);
+		assert (myBody != nullptr);
+    }
+    void unparse(std::ostream& out, int indent);
+ 
+  private:
+      TypeNode * myRetType;
+      IDNode * myID;
+      std::list< FormalDeclNode * > * myParams;
+      std::list< StmtNode * > * myBody;
+};
+
+class FormalDeclNode : public VarDeclNode {
+  public:
+    FormalDeclNode(const Position * p, TypeNode * inType, IDNode * inID) : VarDeclNode(p, inID, inType) { }
+    void unparse(std::ostream& out, int indent);
 };
 
 class PerfectTypeNode : public TypeNode{
