@@ -66,6 +66,7 @@ project)
    drewno_mars::Token*                         lexeme;
    drewno_mars::IDToken*                       transIDToken;
    drewno_mars::IntLitToken*                   transIntToken;
+   drewno_mars::StrToken*                      transStrToken;
    drewno_mars::ProgramNode*                   transProgram;
    drewno_mars::DeclNode *                     transDecl;
    std::list<drewno_mars::DeclNode *> *        transDeclList;
@@ -164,6 +165,7 @@ project)
 %type <transFormalDeclList> formalsList
 %type <transFormalDecl> formalDecl
 %type <transStmtList> stmtList
+%type <transExp> callExp
 /*end types of nonterminals 2}}}*/
 /*end types 1}}}*/
 
@@ -453,7 +455,7 @@ actualsList	: exp
 		  {
 		  }
 
-term 		: loc
+term 		: loc /*{{{1*/
 		  { 
 		  }
 		| INTLITERAL 
@@ -463,15 +465,23 @@ term 		: loc
 		  }
 		| STRINGLITERAL 
 		  {
+		  const Position * p = $1->pos();
+      $$ = new StrLitNode(p, $1->str());
 		  }
 		| TRUE
 		  {
+		  const Position * p = $1->pos();
+      $$ = new TrueNode(p);
 		  }
 		| FALSE
 		  {
+		  const Position * p = $1->pos();
+      $$ = new FalseNode(p);
 		  }
 		| MAGIC
 		  {
+		  const Position * p = $1->pos();
+      $$ = new MagicNode(p);
 		  }
 		| LPAREN exp RPAREN
 		  {
@@ -479,9 +489,11 @@ term 		: loc
 		  }
 		| callExp
 		  {
+      $$ = $1;
 		  }
+/*1}}}*/
 
-loc		: id
+loc		: id /*{{{1*/
 		  {
 		  $$ = $1;
 		  }
@@ -490,6 +502,7 @@ loc		: id
 		  const Position * p = $1->pos();
       $$ = new MemberFieldExpNode(p, $1, $3);
 		  }
+/*1}}}*/
 
 id		: ID /*{{{1*/
 		  {

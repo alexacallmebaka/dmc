@@ -241,4 +241,24 @@ void MemberFieldExpNode::unparse(std::ostream& out, int indent){
   this->myField->unparse(out,0);
 }
 
+void TrueNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  out << "true";
+}
+
+void FalseNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  out << "false";
+}
+
+void MagicNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  out << "24Kmagic";
+}
+
+void StrLitNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  out << myStr; //myStr includes quotes already.
+}
+
 } // End namespace drewno_mars

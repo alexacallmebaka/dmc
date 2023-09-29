@@ -435,6 +435,32 @@ public:
 	void unparse(std::ostream& out, int indent);
 };
 
+class TrueNode : public ExpNode {
+public:
+  TrueNode(const Position * p) : ExpNode(p, false) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class FalseNode : public ExpNode {
+public:
+  FalseNode(const Position * p) : ExpNode(p, false) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class MagicNode : public ExpNode {
+public:
+  MagicNode(const Position * p) : ExpNode(p, false) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class StrLitNode : public ExpNode {
+public:
+  StrLitNode(const Position * p, std::string inStr) : ExpNode(p, false), myStr(inStr) { }
+	void unparse(std::ostream& out, int indent);
+private:
+  std::string myStr;
+};
+
 } //End namespace drewno_mars
 
 #endif

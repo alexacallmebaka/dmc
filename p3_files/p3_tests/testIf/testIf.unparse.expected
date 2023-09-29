@@ -6,4 +6,6 @@ main : () void  {
     }
     if (!(((!4) and 6) or (5 and 7))){
     }
+    if ("hi" == "ih"){
+    }
 }
