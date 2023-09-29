@@ -10,6 +10,12 @@ static void doIndent(std::ostream& out, int indent){
 	for (int k = 0 ; k < indent; k++){ out << "\t"; }
 }
 
+static void printStmtList(std::ostream& out, int indent, std::list< StmtNode * > * stmts){
+  for ( StmtNode * stmt : *stmts ) {
+    stmt->unparse(out, indent);
+  }
+}
+
 /*
 In this code, the intention is that functions are grouped 
 into files by purpose, rather than by class.
@@ -92,10 +98,7 @@ void FnDeclNode::unparse(std::ostream& out, int indent){
   out << ") ";
   this->myRetType->unparse(out,0);
   out << " {\n";
-  for ( StmtNode * stmt : *(this->myBody) ) {
-    stmt->unparse(out, indent+4);
-    out << "\n";
-  }
+  printStmtList(out, indent+4, this->myBody);
   doIndent(out, indent);
   out << "}\n";
 }
@@ -111,10 +114,8 @@ void WhileStmtNode::unparse(std::ostream& out, int indent){
   out << "while (";
   myExp->unparse(out, 0);
   out << "){\n";
-  for ( StmtNode * stmt : *(this->myBody) ) {
-    stmt->unparse(out, indent+4);
-    out << "\n";
-  }
+  printStmtList(out, indent+4, this->myBody);
+  doIndent(out,indent);
   out << "}\n";
 }
 
@@ -123,10 +124,21 @@ void IfStmtNode::unparse(std::ostream& out, int indent){
   out << "if (";
   myExp->unparse(out, 0);
   out << "){\n";
-  for ( StmtNode * stmt : *(this->myBody) ) {
-    stmt->unparse(out, indent+4);
-    out << "\n";
-  }
+  printStmtList(out, indent+4, this->myBody);
+  doIndent(out,indent);
+  out << "}\n";
+}
+
+void IfElseStmtNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  out << "if (";
+  myExp->unparse(out, 0);
+  out << "){\n";
+  printStmtList(out, indent+4, this->myTrueBranch);
+  doIndent(out,indent);
+  out << "} else {\n";
+  printStmtList(out, indent+4, this->myFalseBranch);
+  doIndent(out,indent);
   out << "}\n";
 }
 

@@ -269,7 +269,7 @@ public:
     : StmtNode(p), myExp(inExp), myBody(inBody) {
 		assert (myExp != nullptr);
 		assert (myBody != nullptr);
-    };
+    }
 	void unparse(std::ostream& out, int indent);
 private:
   ExpNode * myExp;
@@ -282,11 +282,26 @@ public:
     : StmtNode(p), myExp(inExp), myBody(inBody) {
 		assert (myExp != nullptr);
 		assert (myBody != nullptr);
-    };
+    }
 	void unparse(std::ostream& out, int indent);
 private:
   ExpNode * myExp;
   std::list< StmtNode * > * myBody;
+};
+
+class IfElseStmtNode : public StmtNode {
+public:
+  IfElseStmtNode(const Position *p, ExpNode * inExp, std::list< StmtNode * > * inTrueBranch, std::list< StmtNode * > * inFalseBranch)
+    : StmtNode(p), myExp(inExp), myTrueBranch(inTrueBranch), myFalseBranch(inFalseBranch) {
+		assert (myExp != nullptr);
+		assert (myTrueBranch != nullptr);
+		assert (myFalseBranch != nullptr);
+    }
+	void unparse(std::ostream& out, int indent);
+private:
+  ExpNode * myExp;
+  std::list< StmtNode * > * myTrueBranch;
+  std::list< StmtNode * > * myFalseBranch;
 };
 
 class IntLitNode : public ExpNode{
