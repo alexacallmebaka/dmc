@@ -420,9 +420,13 @@ exp		: exp DASH exp
 		  }
 		| NOT exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new NotNode(p, $2);
 		  }
 		| DASH term
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new NegNode(p, $2);
 		  }
 		| term
 	  	  {

@@ -328,13 +328,33 @@ public:
   ExpNode * myRhs;
 };
 
+class UnaryExpNode : public ExpNode {
+  protected:
+    UnaryExpNode(const Position * p, ExpNode * inOperand) : ExpNode(p, true), myOperand(inOperand) { 
+		assert (myOperand != nullptr);
+    }
+  public:
+    virtual void unparse(std::ostream& out, int indent) = 0;
+    ExpNode * myOperand;
+};
+
+class NotNode : public UnaryExpNode {
+  public:
+    NotNode(const Position * p, ExpNode * inOperand) : UnaryExpNode(p,inOperand) { }
+    void unparse(std::ostream& out, int indent);
+};
+
+class NegNode : public UnaryExpNode {
+  public:
+    NegNode(const Position * p, ExpNode * inOperand) : UnaryExpNode(p,inOperand) { }
+    void unparse(std::ostream& out, int indent);
+};
 
 class AndNode : public BinaryExpNode {
 public:
   AndNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
 	void unparse(std::ostream& out, int indent);
 };
-
 
 class OrNode : public BinaryExpNode {
 public:

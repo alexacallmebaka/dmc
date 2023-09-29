@@ -30,6 +30,14 @@ void printBinaryExp(std::ostream& out, int indent, BinaryExpNode * expr, std::st
   
 }
 
+void printUnaryExp(std::ostream& out, int indent, UnaryExpNode * expr, std::string op){
+  const bool parens = expr->myOperand->needsParens;
+  out << op << (parens ? "( " : "");
+  expr->myOperand->unparse(out,0);
+  out << (parens ? " )" : "");
+  
+}
+
 /*
 In this code, the intention is that functions are grouped 
 into files by purpose, rather than by class.
@@ -214,6 +222,16 @@ void PlusNode::unparse(std::ostream& out, int indent){
 void TimesNode::unparse(std::ostream& out, int indent){
   doIndent(out, indent);
   printBinaryExp(out, indent, this, " * ");
+}
+
+void NotNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printUnaryExp(out, indent, this, "!");
+}
+
+void NegNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printUnaryExp(out, indent, this, "-");
 }
 
 } // End namespace drewno_mars
