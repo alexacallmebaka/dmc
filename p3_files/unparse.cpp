@@ -282,39 +282,44 @@ void CallStmtNode::unparse(std::ostream& out, int indent){
 
 void ExitStmtNode::unparse(std::ostream& out, int indent){
   doIndent(out, indent);
-  out << "today I don't feel like doing any work";
+  out << "today I don't feel like doing any work;\n";
 }
 
 void ReturnStmtNode::unparse(std::ostream& out, int indent){
   doIndent(out, indent);
-  out << "return";
+  out << "return ";
   if(!this->myRetVal) {
     myRetVal->unparse(out, 0);
   }
+  out << ";\n";
 }
 
 void TakeStmtNode::unparse(std::ostream& out, int indent){
   doIndent(out, indent);
   out << "take ";
   this->myLoc->unparse(out, 0);
+  out << ";\n";
 }
 
 void GiveStmtNode::unparse(std::ostream& out, int indent){
   doIndent(out, indent);
-  out << "take ";
+  out << "give ";
   this->myExp->unparse(out, 0);
+  out << ";\n";
 }
 
 void PostIncStmtNode::unparse(std::ostream& out, int indent){
   doIndent(out, indent);
   this->myLoc->unparse(out, 0);
   out << "++";
+  out << ";\n";
 }
 
 void PostDecStmtNode::unparse(std::ostream& out, int indent){
   doIndent(out, indent);
   this->myLoc->unparse(out, 0);
   out << "--";
+  out << ";\n";
 }
 
 void AssgnStmtNode::unparse(std::ostream& out, int indent){
@@ -322,11 +327,21 @@ void AssgnStmtNode::unparse(std::ostream& out, int indent){
   this->myDest->unparse(out, indent);
   out << " = ";
   this->mySrc->unparse(out, indent);
+  out << ";\n";
 }
 
 void ClassTypeNode::unparse(std::ostream& out, int indent){
   this->myID->unparse(out,indent);
 }
 
+void ClassDefnNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  this->myID->unparse(out, 0);
+  out << " : class {\n";
+  for( DeclNode * decl : *myBody ) {
+    decl->unparse(out, indent+4);
+  }
+  out << "\n};\n";
+}
 
 } // End namespace drewno_mars

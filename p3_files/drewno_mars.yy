@@ -78,6 +78,7 @@ project)
    drewno_mars::StmtNode *                     transStmt;
    drewno_mars::FnDeclNode *                   transFnDecl;
    drewno_mars::FormalDeclNode *               transFormalDecl;
+   drewno_mars::ClassDefnNode *                transClassDefn;
    std::list<drewno_mars::FormalDeclNode *> *  transFormalDeclList;
    std::list<drewno_mars::StmtNode *> *        transStmtList;
    std::list<drewno_mars::ExpNode *> *         transExpList;
@@ -167,7 +168,9 @@ project)
 %type <transFormalDecl> formalDecl
 %type <transStmtList> stmtList
 %type <transExp> callExp
+%type <transClassDefn> classDecl
 %type <transExpList> actualsList
+%type <transDeclList> classBody
 /*end types of nonterminals 2}}}*/
 /*end types 1}}}*/
 
@@ -183,6 +186,7 @@ project)
 
 %%
 
+/*globals and decls {{{1*/
 program 	: globals
 		  {
 		  $$ = new ProgramNode($1);
@@ -204,10 +208,11 @@ decl 		: varDecl SEMICOL
 		  {
 		  $$ = $1;
 		  }
- 		| classDecl { }
+ 		| classDecl { $$ = $1; }
  		| fnDecl {
     $$ = $1;
     }
+/*1}}}*/
 
 varDecl 	: id COLON type /*{{{1*/
 		  {
@@ -260,19 +265,28 @@ primType 	: INT /*{{{1*/
 		  $$ = new VoidTypeNode($1->pos());
 		  } /*1}}}*/
 
+/* classes {{{1*/
 classDecl	: id COLON CLASS LCURLY classBody RCURLY SEMICOL
 		  {
+      const Position * p = new Position($1->pos(), $7->pos());
+      $$ = new ClassDefnNode(p,$1,$5);
 		  }
 
 classBody	: classBody varDecl SEMICOL
 		  {
+      $1->push_back($2);
+      $$ = $1;
 		  }
 		| classBody fnDecl
 		  {
+      $1->push_back($2);
+      $$ = $1;
 		  }
 		| /* epsilon */
 		  {
+      $$ = new std::list< DeclNode * >();
 		  }
+/*1}}}*/
 
 /* fndecl + formals {{{1*/
 fnDecl  : id COLON LPAREN formals RPAREN type LCURLY stmtList RCURLY
