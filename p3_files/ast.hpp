@@ -273,12 +273,6 @@ public:
 	void unparse(std::ostream& out, int indent);
 };
 
-class ClassTypeNode : public TypeNode{
-public:
-	ClassTypeNode(const Position * p) : TypeNode(p){ }
-	void unparse(std::ostream& out, int indent);
-};
-
 class WhileStmtNode : public StmtNode{
 public:
   WhileStmtNode(const Position *p, ExpNode * inExp, std::list< StmtNode * > * inBody)
@@ -465,7 +459,7 @@ class CallExpNode : public ExpNode {
 public:
   CallExpNode (const Position * p, std::list< ExpNode * > * inArgs, LocNode * inLoc)
     : ExpNode(p, false), myArgs(inArgs), myLoc(inLoc) {
-		assert (inArgs != nullptr);
+		assert (myArgs != nullptr);
     }
 	void unparse(std::ostream& out, int indent);
 private:
@@ -475,10 +469,79 @@ private:
 
 class CallStmtNode : public StmtNode {
 public:
-  CallStmtNode (const Position * p, ExpNode * inCall) : StmtNode(p), myCall(inCall) { }
+  CallStmtNode(const Position * p, ExpNode * inCall) : StmtNode(p), myCall(inCall) { }
 	void unparse(std::ostream& out, int indent);
 private:
   ExpNode * myCall;
+};
+
+class ExitStmtNode : public StmtNode {
+public:
+  ExitStmtNode(const Position * p) : StmtNode(p) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class ReturnStmtNode : public StmtNode {
+public:
+  ReturnStmtNode(const Position * p, ExpNode * inRetVal) : StmtNode(p), myRetVal(inRetVal) { }
+	void unparse(std::ostream& out, int indent);
+private:
+  ExpNode * myRetVal;
+};
+
+class TakeStmtNode : public StmtNode {
+public:
+  TakeStmtNode(const Position * p, LocNode * inLoc) : StmtNode(p), myLoc(inLoc) { }
+	void unparse(std::ostream& out, int indent);
+private:
+  LocNode * myLoc;
+};
+
+class GiveStmtNode : public StmtNode {
+public:
+  GiveStmtNode(const Position * p, ExpNode * inExp) : StmtNode(p), myExp(inExp) { }
+	void unparse(std::ostream& out, int indent);
+private:
+  ExpNode * myExp;
+};
+
+class PostIncStmtNode : public StmtNode {
+public:
+  PostIncStmtNode(const Position * p, LocNode * inLoc) : StmtNode(p), myLoc(inLoc) { }
+	void unparse(std::ostream& out, int indent);
+private:
+  LocNode * myLoc;
+};
+
+class PostDecStmtNode : public StmtNode {
+public:
+  PostDecStmtNode(const Position * p, LocNode * inLoc) : StmtNode(p), myLoc(inLoc) { }
+	void unparse(std::ostream& out, int indent);
+private:
+  LocNode * myLoc;
+};
+
+class AssgnStmtNode : public StmtNode {
+public:
+  AssgnStmtNode(const Position * p, LocNode * inSrc, ExpNode * inDest)
+    : StmtNode(p), mySrc(inSrc), myDest(inDest) {
+		assert (mySrc != nullptr);
+		assert (myDest != nullptr);
+    }
+	void unparse(std::ostream& out, int indent);
+private:
+  LocNode * mySrc;
+  ExpNode * myDest;
+};
+
+class ClassTypeNode : public TypeNode {
+public:
+  ClassTypeNode(const Position * p, IDNode * inID) : TypeNode(p), myID(inID) {
+		assert (myID != nullptr);
+  }
+	void unparse(std::ostream& out, int indent);
+private:
+  IDNode * myID;
 };
 
 } //End namespace drewno_mars

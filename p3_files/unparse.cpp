@@ -280,4 +280,53 @@ void CallStmtNode::unparse(std::ostream& out, int indent){
   out << ";\n";
 }
 
+void ExitStmtNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  out << "today I don't feel like doing any work";
+}
+
+void ReturnStmtNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  out << "return";
+  if(!this->myRetVal) {
+    myRetVal->unparse(out, 0);
+  }
+}
+
+void TakeStmtNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  out << "take ";
+  this->myLoc->unparse(out, 0);
+}
+
+void GiveStmtNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  out << "take ";
+  this->myExp->unparse(out, 0);
+}
+
+void PostIncStmtNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  this->myLoc->unparse(out, 0);
+  out << "++";
+}
+
+void PostDecStmtNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  this->myLoc->unparse(out, 0);
+  out << "--";
+}
+
+void AssgnStmtNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  this->myDest->unparse(out, indent);
+  out << " = ";
+  this->mySrc->unparse(out, indent);
+}
+
+void ClassTypeNode::unparse(std::ostream& out, int indent){
+  this->myID->unparse(out,indent);
+}
+
+
 } // End namespace drewno_mars

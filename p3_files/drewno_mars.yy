@@ -223,12 +223,15 @@ varDecl 	: id COLON type /*{{{1*/
 		  }
 /*1}}}*/
 
+/* types {{{1*/
 type		: primType
 		  {
 		  $$ = $1;
 		  }
 		| id
 		  {
+		  const Position * p;
+      $$ = new ClassTypeNode($1->pos(), $1);
 		  }
 		| PERFECT primType
 		  {
@@ -238,7 +241,11 @@ type		: primType
 		  }
 		| PERFECT id
 		  {
+		  const Position * p;
+      ClassTypeNode * type = new ClassTypeNode($2->pos(), $2);
+      $$ = new PerfectTypeNode($1->pos(), type);
 		  }
+/*1}}}*/
 
 primType 	: INT /*{{{1*/
 	  	  { 
@@ -335,38 +342,48 @@ blockStmt	: WHILE LPAREN exp RPAREN LCURLY stmtList RCURLY /*{{{1*/
 		  }
 /*1}}}*/
 
+/*stmts {{{1*/
 stmt		: varDecl
 		  {
       $$ = $1;
 		  }
 		| loc ASSIGN exp
 		  {
+      $$ = new AssgnStmtNode($1->pos(), $1, $3);
 		  }
 		| loc POSTDEC
 		  {
+      $$ = new PostDecStmtNode($1->pos(), $1);
 		  }
 		| loc POSTINC
 		  {
+      $$ = new PostIncStmtNode($1->pos(), $1);
 		  }
 		| GIVE exp
 		  {
+      $$ = new GiveStmtNode($1->pos(), $2);
 		  }
 		| TAKE loc
 		  {
+      $$ = new TakeStmtNode($1->pos(), $2);
 		  }
 		| RETURN exp
 		  {
+      $$ = new ReturnStmtNode($1->pos(), $2); 
 		  }
 		| RETURN
 		  {
+      $$ = new ReturnStmtNode($1->pos(), nullptr); 
 		  }
 		| EXIT
 		  {
+      $$ = new ExitStmtNode($1->pos()); 
 		  }
 		| callExp
 		  { 
       $$ = new CallStmtNode($1->pos(), $1);
 		  }
+/*1}}}*/
 
 exp		: exp DASH exp /*{{{1*/
 	  	  {
@@ -444,6 +461,7 @@ exp		: exp DASH exp /*{{{1*/
 		  }
 /*1}}}*/
 
+/*call exprs{{{1*/
 callExp		: loc LPAREN RPAREN
 		  {
       $$ = new CallExpNode($1->pos(), new std::list< ExpNode * >(), $1);
@@ -464,6 +482,7 @@ actualsList	: exp
       $1->push_back($3);
       $$ = $1;
 		  }
+/*1}}}*/
 
 term 		: loc /*{{{1*/
 		  { 
