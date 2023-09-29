@@ -508,6 +508,7 @@ actualsList	: exp
 
 term 		: loc /*{{{1*/
 		  { 
+      $$=$1;
 		  }
 		| INTLITERAL 
 		  {
