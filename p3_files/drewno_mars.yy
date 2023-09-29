@@ -217,13 +217,13 @@ decl 		: varDecl SEMICOL
 varDecl 	: id COLON type /*{{{1*/
 		  {
 		  const Position * p;
-		  p = new Position($1->pos(), $2->pos());
+		  p = new Position($1->pos(), $3->pos());
 		  $$ = new VarDeclNode(p, $1, $3);
 		  }
 		| id COLON type ASSIGN exp
 		  {
 		  const Position * p;
-		  p = new Position($1->pos(), $2->pos());
+		  p = new Position($1->pos(), $5->pos());
 		  $$ = new VarDeclNode(p, $1, $3, $5);
 		  }
 /*1}}}*/
@@ -246,9 +246,9 @@ type		: primType
 		  }
 		| PERFECT id
 		  {
-		  const Position * p;
+		  const Position * p = new Position($1->pos(), $2->pos());
       ClassTypeNode * type = new ClassTypeNode($2->pos(), $2);
-      $$ = new PerfectTypeNode($1->pos(), type);
+      $$ = new PerfectTypeNode(p, type);
 		  }
 /*1}}}*/
 
@@ -291,7 +291,7 @@ classBody	: classBody varDecl SEMICOL
 /* fndecl + formals {{{1*/
 fnDecl  : id COLON LPAREN formals RPAREN type LCURLY stmtList RCURLY
 		  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $9->pos());
       $$ = new FnDeclNode(p, $6, $1, $4, $8); 
 		  }
 
@@ -318,7 +318,7 @@ formalsList 	: formalDecl
 
 formalDecl 	: id COLON type
 		  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new FormalDeclNode(p, $3, $1);
 		  }
 /*end fn decl + formals 1}}}*/
@@ -341,17 +341,17 @@ stmtList 	: /* epsilon */ /*{{{1*/
 
 blockStmt	: WHILE LPAREN exp RPAREN LCURLY stmtList RCURLY /*{{{1*/
 		  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $7->pos());
       $$ = new WhileStmtNode(p, $3, $6);
 		  }
 		| IF LPAREN exp RPAREN LCURLY stmtList RCURLY
 		  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $7->pos());
       $$ = new IfStmtNode(p, $3, $6);
 		  }
 		| IF LPAREN exp RPAREN LCURLY stmtList RCURLY ELSE LCURLY stmtList RCURLY
 		  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $9->pos());
       $$ = new IfElseStmtNode(p, $3, $6, $10);
 		  }
 /*1}}}*/
@@ -363,27 +363,33 @@ stmt		: varDecl
 		  }
 		| loc ASSIGN exp
 		  {
-      $$ = new AssgnStmtNode($1->pos(), $1, $3);
+      const Position * p = new Position($1->pos(), $3->pos());
+      $$ = new AssgnStmtNode(p, $1, $3);
 		  }
 		| loc POSTDEC
 		  {
-      $$ = new PostDecStmtNode($1->pos(), $1);
+      const Position * p = new Position($1->pos(), $2->pos());
+      $$ = new PostDecStmtNode(p, $1);
 		  }
 		| loc POSTINC
 		  {
-      $$ = new PostIncStmtNode($1->pos(), $1);
+      const Position * p = new Position($1->pos(), $2->pos());
+      $$ = new PostIncStmtNode(p, $1);
 		  }
 		| GIVE exp
 		  {
-      $$ = new GiveStmtNode($1->pos(), $2);
+      const Position * p = new Position($1->pos(), $2->pos());
+      $$ = new GiveStmtNode(p, $2);
 		  }
 		| TAKE loc
 		  {
-      $$ = new TakeStmtNode($1->pos(), $2);
+      const Position * p = new Position($1->pos(), $2->pos());
+      $$ = new TakeStmtNode(p, $2);
 		  }
 		| RETURN exp
 		  {
-      $$ = new ReturnStmtNode($1->pos(), $2); 
+      const Position * p = new Position($1->pos(), $2->pos());
+      $$ = new ReturnStmtNode(p, $2); 
 		  }
 		| RETURN
 		  {
@@ -401,72 +407,72 @@ stmt		: varDecl
 
 exp		: exp DASH exp /*{{{1*/
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new MinusNode(p, $1, $3);
 		  }
 		| exp CROSS exp
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new PlusNode(p, $1, $3);
 		  }
 		| exp STAR exp
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new TimesNode(p, $1, $3);
 		  }
 		| exp SLASH exp
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new DivideNode(p, $1, $3);
 		  }
 		| exp AND exp
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new AndNode(p, $1, $3);
 		  }
 		| exp OR exp
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new OrNode(p, $1, $3);
 		  }
 		| exp EQUALS exp
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new EqualsNode(p, $1, $3);
 		  }
 		| exp NOTEQUALS exp
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new NotEqualsNode(p, $1, $3);
 		  }
 		| exp GREATER exp
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new GreaterNode(p, $1, $3);
 		  }
 		| exp GREATEREQ exp
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new GreaterEqNode(p, $1, $3);
 		  }
 		| exp LESS exp
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new LessNode(p, $1, $3);
 		  }
 		| exp LESSEQ exp
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new LessEqNode(p, $1, $3);
 		  }
 		| NOT exp
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $2->pos());
       $$ = new NotNode(p, $2);
 		  }
 		| DASH term
 	  	  {
-      const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $2->pos());
       $$ = new NegNode(p, $2);
 		  }
 		| term
@@ -478,11 +484,13 @@ exp		: exp DASH exp /*{{{1*/
 /*call exprs{{{1*/
 callExp		: loc LPAREN RPAREN
 		  {
-      $$ = new CallExpNode($1->pos(), new std::list< ExpNode * >(), $1);
+      const Position * p = new Position($1->pos(), $3->pos());
+      $$ = new CallExpNode(p, new std::list< ExpNode * >(), $1);
 		  }
 		| loc LPAREN actualsList RPAREN
 		  {
-      $$ = new CallExpNode($1->pos(), $3, $1);
+      const Position * p = new Position($1->pos(), $4->pos());
+      $$ = new CallExpNode(p, $3, $1);
 		  }
 
 actualsList	: exp
@@ -542,7 +550,7 @@ loc		: id /*{{{1*/
 		  }
 		| loc POSTDEC id
 		  {
-		  const Position * p = $1->pos();
+      const Position * p = new Position($1->pos(), $3->pos());
       $$ = new MemberFieldExpNode(p, $1, $3);
 		  }
 /*1}}}*/
