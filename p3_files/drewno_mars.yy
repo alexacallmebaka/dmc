@@ -360,39 +360,63 @@ stmt		: varDecl
 
 exp		: exp DASH exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new MinusNode(p, $1, $3);
 		  }
 		| exp CROSS exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new PlusNode(p, $1, $3);
 		  }
 		| exp STAR exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new TimesNode(p, $1, $3);
 		  }
 		| exp SLASH exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new DivideNode(p, $1, $3);
 		  }
 		| exp AND exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new AndNode(p, $1, $3);
 		  }
 		| exp OR exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new OrNode(p, $1, $3);
 		  }
 		| exp EQUALS exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new EqualsNode(p, $1, $3);
 		  }
 		| exp NOTEQUALS exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new NotEqualsNode(p, $1, $3);
 		  }
 		| exp GREATER exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new GreaterNode(p, $1, $3);
 		  }
 		| exp GREATEREQ exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new GreaterEqNode(p, $1, $3);
 		  }
 		| exp LESS exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new LessNode(p, $1, $3);
 		  }
 		| exp LESSEQ exp
 	  	  {
+      const Position * p = $1->pos();
+      $$ = new LessEqNode(p, $1, $3);
 		  }
 		| NOT exp
 	  	  {
@@ -441,6 +465,7 @@ term 		: loc
 		  }
 		| LPAREN exp RPAREN
 		  {
+      $$ = $2;
 		  }
 		| callExp
 		  {

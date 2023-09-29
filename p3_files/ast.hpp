@@ -144,7 +144,10 @@ public:
 **/
 class ExpNode : public ASTNode{
 protected:
-	ExpNode(const Position * p) : ASTNode(p){ }
+	ExpNode(const Position * p, const bool inParens) : ASTNode(p), needsParens(inParens){ }
+public:
+  const bool needsParens;
+	void unparse(std::ostream& out, int indent) = 0;
 };
 
 /**  \class TypeNode
@@ -167,7 +170,7 @@ public:
 class LocNode : public ExpNode{
 public:
 	LocNode(const Position * p)
-	: ExpNode(p) {}
+	: ExpNode(p,false) {}
 	void unparse(std::ostream& out, int indent) = 0;
 };
 
@@ -306,10 +309,97 @@ private:
 
 class IntLitNode : public ExpNode{
 public:
-  IntLitNode(const Position *p, const int inVal) : ExpNode(p), myVal(inVal) { }
+  IntLitNode(const Position *p, const int inVal) : ExpNode(p, false), myVal(inVal) { }
 	void unparse(std::ostream& out, int indent);
 private:
   int myVal;
+};
+
+class BinaryExpNode : public ExpNode{
+protected:
+  BinaryExpNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs)
+  : ExpNode(p, true), myLhs(inLhs), myRhs(inRhs) {
+		assert (myRhs != nullptr);
+		assert (myLhs != nullptr);
+  }
+public:
+  virtual void unparse(std::ostream& out, int indent) = 0;
+  ExpNode * myLhs;
+  ExpNode * myRhs;
+};
+
+
+class AndNode : public BinaryExpNode {
+public:
+  AndNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+
+class OrNode : public BinaryExpNode {
+public:
+  OrNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class DivideNode : public BinaryExpNode {
+public:
+  DivideNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class EqualsNode : public BinaryExpNode {
+public:
+  EqualsNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class GreaterEqNode : public BinaryExpNode {
+public:
+  GreaterEqNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class GreaterNode : public BinaryExpNode {
+public:
+  GreaterNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class LessEqNode : public BinaryExpNode {
+public:
+  LessEqNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class LessNode : public BinaryExpNode {
+public:
+  LessNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class MinusNode : public BinaryExpNode {
+public:
+  MinusNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class NotEqualsNode : public BinaryExpNode {
+public:
+  NotEqualsNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class PlusNode : public BinaryExpNode {
+public:
+  PlusNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
+	void unparse(std::ostream& out, int indent);
+};
+
+class TimesNode : public BinaryExpNode {
+public:
+  TimesNode(const Position * p, ExpNode * inLhs, ExpNode * inRhs) : BinaryExpNode(p, inLhs, inRhs) { }
+	void unparse(std::ostream& out, int indent);
 };
 
 } //End namespace drewno_mars

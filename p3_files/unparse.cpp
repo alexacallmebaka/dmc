@@ -16,6 +16,20 @@ static void printStmtList(std::ostream& out, int indent, std::list< StmtNode * >
   }
 }
 
+
+void printBinaryExp(std::ostream& out, int indent, BinaryExpNode * expr, std::string op){
+  const bool lhsParens = expr->myLhs->needsParens;
+  const bool rhsParens = expr->myRhs->needsParens;
+  out << (lhsParens ? "( " : "");
+  expr->myLhs->unparse(out,0);
+  out << (lhsParens ? " )" : "");
+  out << op;
+  out << (rhsParens ? "( " : "");
+  expr->myRhs->unparse(out,0);
+  out << (rhsParens ? " )" : "");
+  
+}
+
 /*
 In this code, the intention is that functions are grouped 
 into files by purpose, rather than by class.
@@ -112,7 +126,7 @@ void FormalDeclNode::unparse(std::ostream& out, int indent){
 void WhileStmtNode::unparse(std::ostream& out, int indent){
   doIndent(out, indent);
   out << "while (";
-  myExp->unparse(out, 0);
+  this->myExp->unparse(out, 0);
   out << "){\n";
   printStmtList(out, indent+4, this->myBody);
   doIndent(out,indent);
@@ -122,7 +136,7 @@ void WhileStmtNode::unparse(std::ostream& out, int indent){
 void IfStmtNode::unparse(std::ostream& out, int indent){
   doIndent(out, indent);
   out << "if (";
-  myExp->unparse(out, 0);
+  this->myExp->unparse(out, 0);
   out << "){\n";
   printStmtList(out, indent+4, this->myBody);
   doIndent(out,indent);
@@ -132,7 +146,7 @@ void IfStmtNode::unparse(std::ostream& out, int indent){
 void IfElseStmtNode::unparse(std::ostream& out, int indent){
   doIndent(out, indent);
   out << "if (";
-  myExp->unparse(out, 0);
+  this->myExp->unparse(out, 0);
   out << "){\n";
   printStmtList(out, indent+4, this->myTrueBranch);
   doIndent(out,indent);
@@ -140,6 +154,66 @@ void IfElseStmtNode::unparse(std::ostream& out, int indent){
   printStmtList(out, indent+4, this->myFalseBranch);
   doIndent(out,indent);
   out << "}\n";
+}
+
+void AndNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printBinaryExp(out, indent, this, " and ");
+}
+
+void OrNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printBinaryExp(out, indent, this, " or ");
+}
+
+void DivideNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printBinaryExp(out, indent, this, " / ");
+}
+
+void EqualsNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printBinaryExp(out, indent, this, " == ");
+}
+
+void GreaterEqNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printBinaryExp(out, indent, this, " >= ");
+}
+
+void GreaterNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printBinaryExp(out, indent, this, " > ");
+}
+
+void LessEqNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printBinaryExp(out, indent, this, " <= ");
+}
+
+void LessNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printBinaryExp(out, indent, this, " < ");
+}
+
+void MinusNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printBinaryExp(out, indent, this, " - ");
+}
+
+void NotEqualsNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printBinaryExp(out, indent, this, " != ");
+}
+
+void PlusNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printBinaryExp(out, indent, this, " + ");
+}
+
+void TimesNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  printBinaryExp(out, indent, this, " * ");
 }
 
 } // End namespace drewno_mars
