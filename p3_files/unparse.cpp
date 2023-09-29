@@ -261,4 +261,23 @@ void StrLitNode::unparse(std::ostream& out, int indent){
   out << myStr; //myStr includes quotes already.
 }
 
+void CallExpNode::unparse(std::ostream& out, int indent){
+  this->myLoc->unparse(out,indent);
+  out << "(";
+  size_t index = 0;
+  for( auto arg : *myArgs ) {
+    arg->unparse(out,0);
+    if ( index < this->myArgs->size() - 1) {
+      out << ", ";
+      index++;
+    }
+  }
+  out << ")";
+}
+
+void CallStmtNode::unparse(std::ostream& out, int indent){
+  this->myCall->unparse(out, indent);
+  out << ";\n";
+}
+
 } // End namespace drewno_mars

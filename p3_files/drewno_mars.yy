@@ -79,7 +79,8 @@ project)
    drewno_mars::FnDeclNode *                   transFnDecl;
    drewno_mars::FormalDeclNode *               transFormalDecl;
    std::list<drewno_mars::FormalDeclNode *> *  transFormalDeclList;
-   std::list<drewno_mars::StmtNode *> *  transStmtList;
+   std::list<drewno_mars::StmtNode *> *        transStmtList;
+   std::list<drewno_mars::ExpNode *> *         transExpList;
 }
 /*end typedefs 2}}}*/
 %define parse.assert
@@ -166,6 +167,7 @@ project)
 %type <transFormalDecl> formalDecl
 %type <transStmtList> stmtList
 %type <transExp> callExp
+%type <transExpList> actualsList
 /*end types of nonterminals 2}}}*/
 /*end types 1}}}*/
 
@@ -363,6 +365,7 @@ stmt		: varDecl
 		  }
 		| callExp
 		  { 
+      $$ = new CallStmtNode($1->pos(), $1);
 		  }
 
 exp		: exp DASH exp /*{{{1*/
@@ -443,16 +446,23 @@ exp		: exp DASH exp /*{{{1*/
 
 callExp		: loc LPAREN RPAREN
 		  {
+      $$ = new CallExpNode($1->pos(), new std::list< ExpNode * >(), $1);
 		  }
 		| loc LPAREN actualsList RPAREN
 		  {
+      $$ = new CallExpNode($1->pos(), $3, $1);
 		  }
 
 actualsList	: exp
 		  {
+      std::list< ExpNode *> * actuals = new std::list< ExpNode * >;
+      actuals->push_back($1);
+      $$ = actuals;
 		  }
 		| actualsList COMMA exp
 		  {
+      $1->push_back($3);
+      $$ = $1;
 		  }
 
 term 		: loc /*{{{1*/

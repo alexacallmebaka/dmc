@@ -461,6 +461,26 @@ private:
   std::string myStr;
 };
 
+class CallExpNode : public ExpNode {
+public:
+  CallExpNode (const Position * p, std::list< ExpNode * > * inArgs, LocNode * inLoc)
+    : ExpNode(p, false), myArgs(inArgs), myLoc(inLoc) {
+		assert (inArgs != nullptr);
+    }
+	void unparse(std::ostream& out, int indent);
+private:
+  std::list< ExpNode * > * myArgs;
+  LocNode * myLoc;
+};
+
+class CallStmtNode : public StmtNode {
+public:
+  CallStmtNode (const Position * p, ExpNode * inCall) : StmtNode(p), myCall(inCall) { }
+	void unparse(std::ostream& out, int indent);
+private:
+  ExpNode * myCall;
+};
+
 } //End namespace drewno_mars
 
 #endif
