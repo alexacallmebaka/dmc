@@ -187,6 +187,19 @@ private:
 	std::string name;
 };
 
+class MemberFieldExpNode : public LocNode{
+public:
+  MemberFieldExpNode(const Position * p, LocNode * inBaseClass, IDNode * inField)
+  : LocNode(p), myBaseClass(inBaseClass), myField(inField) {
+	assert (myBaseClass != nullptr);
+	assert (myField != nullptr);
+  }
+	void unparse(std::ostream& out, int indent);
+private:
+  LocNode * myBaseClass;
+  IDNode * myField;
+};
+
 /** A variable declaration.
 **/
 class VarDeclNode : public DeclNode{

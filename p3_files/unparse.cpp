@@ -234,4 +234,11 @@ void NegNode::unparse(std::ostream& out, int indent){
   printUnaryExp(out, indent, this, "-");
 }
 
+void MemberFieldExpNode::unparse(std::ostream& out, int indent){
+  doIndent(out, indent);
+  this->myBaseClass->unparse(out,0);
+  out << "--";
+  this->myField->unparse(out,0);
+}
+
 } // End namespace drewno_mars

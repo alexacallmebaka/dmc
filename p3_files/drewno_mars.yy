@@ -205,7 +205,7 @@ decl 		: varDecl SEMICOL
     $$ = $1;
     }
 
-varDecl 	: id COLON type
+varDecl 	: id COLON type /*{{{1*/
 		  {
 		  const Position * p;
 		  p = new Position($1->pos(), $2->pos());
@@ -217,6 +217,7 @@ varDecl 	: id COLON type
 		  p = new Position($1->pos(), $2->pos());
 		  $$ = new VarDeclNode(p, $1, $3, $5);
 		  }
+/*1}}}*/
 
 type		: primType
 		  {
@@ -235,7 +236,7 @@ type		: primType
 		  {
 		  }
 
-primType 	: INT
+primType 	: INT /*{{{1*/
 	  	  { 
 		  $$ = new IntTypeNode($1->pos());
 		  }
@@ -246,7 +247,7 @@ primType 	: INT
 		| VOID
 		  {
 		  $$ = new VoidTypeNode($1->pos());
-		  }
+		  } /*1}}}*/
 
 classDecl	: id COLON CLASS LCURLY classBody RCURLY SEMICOL
 		  {
@@ -262,6 +263,7 @@ classBody	: classBody varDecl SEMICOL
 		  {
 		  }
 
+/* fndecl + formals {{{1*/
 fnDecl  : id COLON LPAREN formals RPAREN type LCURLY stmtList RCURLY
 		  {
       const Position * p = $1->pos();
@@ -294,8 +296,9 @@ formalDecl 	: id COLON type
       const Position * p = $1->pos();
       $$ = new FormalDeclNode(p, $3, $1);
 		  }
+/*end fn decl + formals 1}}}*/
 
-stmtList 	: /* epsilon */
+stmtList 	: /* epsilon */ /*{{{1*/
 	   	  {
         $$ = new std::list< StmtNode * >;
 	   	  }
@@ -309,8 +312,9 @@ stmtList 	: /* epsilon */
         $1->push_back($2);
         $$ = $1;
 	  	  }
+/*1}}}*/
 
-blockStmt	: WHILE LPAREN exp RPAREN LCURLY stmtList RCURLY
+blockStmt	: WHILE LPAREN exp RPAREN LCURLY stmtList RCURLY /*{{{1*/
 		  {
       const Position * p = $1->pos();
       $$ = new WhileStmtNode(p, $3, $6);
@@ -325,6 +329,7 @@ blockStmt	: WHILE LPAREN exp RPAREN LCURLY stmtList RCURLY
       const Position * p = $1->pos();
       $$ = new IfElseStmtNode(p, $3, $6, $10);
 		  }
+/*1}}}*/
 
 stmt		: varDecl
 		  {
@@ -358,7 +363,7 @@ stmt		: varDecl
 		  { 
 		  }
 
-exp		: exp DASH exp
+exp		: exp DASH exp /*{{{1*/
 	  	  {
       const Position * p = $1->pos();
       $$ = new MinusNode(p, $1, $3);
@@ -432,6 +437,7 @@ exp		: exp DASH exp
 	  	  {
         $$ = $1;
 		  }
+/*1}}}*/
 
 callExp		: loc LPAREN RPAREN
 		  {
@@ -481,13 +487,16 @@ loc		: id
 		  }
 		| loc POSTDEC id
 		  {
+		  const Position * p = $1->pos();
+      $$ = new MemberFieldExpNode(p, $1, $3);
 		  }
 
-id		: ID
+id		: ID /*{{{1*/
 		  {
 		  const Position * pos = $1->pos();
 		  $$ = new IDNode(pos, $1->value());
 		  }
+/*1}}}*/
 	
 %%
 
