@@ -546,7 +546,7 @@ private:
 
 class ClassDefnNode : public DeclNode {
 public:
-  ClassDefnNode(const Position * p, IDNode * inID, std::list< DeclNode * > * inBody) 
+  ClassDefnNode(const Position * p, IDNode * inID, std::list< DeclNode * > * inBody ) 
   : DeclNode(p), myID(inID), myBody(inBody) {
 		assert (myID != nullptr);
 		assert (myBody != nullptr);

@@ -1,0 +1,95 @@
+/*********************************************************************
+ Grammar for Drewno Mars programs
+ ********************************************************************/
+program         ::= globals
+
+globals         ::= globals decl
+                | /* epsilon */
+
+decl		::= varDecl SEMICOL
+		 |  classDecl
+       		 |  fnDecl
+
+varDecl         ::= id COLON type
+       		 |  id COLON type ASSIGN exp
+
+type            ::= primType
+                 |  PERFECT primType
+                 |  id
+                 |  PERFECT id
+
+primType        ::= INT
+                 |  BOOL
+                 |  VOID
+
+classDecl	::= id COLON CLASS LCURLY classBody RCURLY SEMICOL
+
+classBody	::= classBody varDecl
+                 |  classBody fnDecl
+                 |  /* epsilon */
+
+fnDecl          ::= id COLON LPAREN formals RPAREN type LCURLY stmtList RCURLY
+		 |  id COLON LPAREN RPAREN type LCURLY stmtList RCURLY
+
+formals         ::= formalsList
+                 |  /* epsilon */
+
+formalsList     ::= formalDecl
+                 |  formalsList COMMA formalDecl
+
+formalDecl	::= id COLON type
+
+stmtList        ::= stmtList stmt SEMICOL
+                |   stmtList blockStmt
+                |   /* epsilon */
+
+blockStmt	::= WHILE LPAREN exp RPAREN LCURLY stmtList RCURLY
+		| IF LPAREN exp RPAREN LCURLY stmtList RCURLY
+		| IF LPAREN exp RPAREN LCURLY stmtList RCURLY ELSE LCURLY stmtList RCURLY
+
+stmt            ::= varDecl
+                | loc ASSIGN exp
+                | loc POSTDEC
+                | loc POSTINC
+                | GIVE exp
+                | TAKE loc
+                | RETURN exp
+                | RETURN
+                | EXIT
+                | callExp
+
+exp             ::= exp DASH exp
+                | exp CROSS exp
+                | exp STAR exp
+                | exp SLASH exp
+                | exp AND exp
+                | exp OR exp
+                | exp EQUALS exp
+                | exp NOTEQUALS exp
+                | exp GREATER exp
+                | exp GREATEREQ exp
+                | exp LESS exp
+                | exp LESSEQ exp
+                | NOT exp
+                | DASH term
+                | term
+
+callExp         ::=  id LPAREN RPAREN   // fn call with no args
+                | id LPAREN actualsList RPAREN  // with args
+
+actualsList     ::= exp
+                | actualsList COMMA exp
+                
+term            ::= loc
+                | INTLITERAL
+                | STRINGLITERAL
+                | TRUE
+                | FALSE
+                | MAGIC
+                | LPAREN exp RPAREN
+                | callExp
+
+loc		::= id
+		| loc POSTDEC id
+
+id              ::= ID

@@ -9,6 +9,9 @@ FLAGS=-pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdis
 TESTPROGS := $(wildcard tests/*.dm)
 TESTS := $(TESTPROGS:.dm=)
 
+GOOD_TESTS := $(wildcard tests/good/*.dm)
+BAD_TESTS := $(wildcard tests/bad/*.dm)
+
 .PHONY: all clean test cleantest
 
 all: 
@@ -28,7 +31,8 @@ dmc: $(OBJ_SRCS)
 parser.o: parser.cc
 	$(CXX) $(FLAGS) -Wno-sign-compare -Wno-sign-conversion -Wno-switch-default -g -std=c++14 -MMD -MP -c -o $@ $<
 
-parser.cc: drewno_mars.yy
+#parser.cc: drewno_mars.yy
+parser.cc: adair.yy
 	bison -Werror -Wno-deprecated --defines=frontend.hh -v $<
 
 lexer.yy.cc: drewno_mars.l
