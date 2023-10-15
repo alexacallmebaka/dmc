@@ -68,20 +68,17 @@ SymbolTable::SymbolTable(){
 }
 
 //a new scope table will be entered into the front of the chain
-ScopeTable * SymbolTable::createScopeTable() {
+void SymbolTable::createScopeTable() {
 	ScopeTable * scope = new ScopeTable();
 	scopeTableChain->push_front(scope);
-	return scope;
 }
 
 // latest scope table will be removed from the front of the chain.
-ScopeTable * SymbolTable::dropScopeTable() {
+void SymbolTable::dropScopeTable() {
 	if(!scopeTableChain->empty()) {
 		ScopeTable * scope = scopeTableChain->front();
 		scopeTableChain->pop_front();
-		return scope;
 	}
-	return nullptr;
 }
 
 ScopeTable * SymbolTable::topScope() {

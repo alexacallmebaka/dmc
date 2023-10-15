@@ -92,10 +92,10 @@ class SymbolTable{
 		// when a scope is exited, etc.
 
 		//create a new ScopeTable when a new scope is entered
-		ScopeTable * createScopeTable();
+		void createScopeTable();
 
 		//drop a ScopeTable when a scope is exited
-		ScopeTable * dropScopeTable();
+		void dropScopeTable();
 
 		ScopeTable * topScope();
 
