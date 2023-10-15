@@ -16,7 +16,7 @@ class SymbolTable;
 class SemSymbol;
 
 /* You may find it useful to forward declare AST subclasses
-   here so that you can use a class before it's full definition
+  here so that you can use a class before it's full definition
 */
 
 //subclasses of ASTNode {{{1
@@ -157,8 +157,11 @@ public:
 	std::string getName(){ return name; }
 	void unparse(std::ostream& out, int indent) override;
 	void unparseNested(std::ostream& out) override;
-	void attachSymbol(SemSymbol * symbolIn);
+	void attachSymbol(SemSymbol * symbolIn){
+		mySymbol = symbolIn;
+	};
 	SemSymbol * getSymbol() const { return mySymbol; }
+	bool nameAnalysis(SymbolTable * symTab) override;
 private:
 	std::string name;
 	SemSymbol * mySymbol;
@@ -173,7 +176,7 @@ class TypeNode : public ASTNode{
 public:
 	TypeNode(const Position * p) : ASTNode(p){ }
 	void unparse(std::ostream&, int) override = 0;
-	virtual std::string typeStr() = 0;
+	virtual Type typeStr() = 0;
 };
 
 class StmtNode : public ASTNode{
@@ -231,25 +234,17 @@ public:
 class FnDeclNode : public DeclNode{
 public:
 	FnDeclNode(const Position * p,
-	  IDNode * inID,
-	  std::list<FormalDeclNode *> * inFormals,
-	  TypeNode * retTypeIn,
-	  std::list<StmtNode *> * inBody)
-	: DeclNode(p), myID(inID),
-	  myFormals(inFormals), myRetType(retTypeIn),
-	  myBody(inBody){
-	}
+	  IDNode * inID, std::list<FormalDeclNode *> * inFormals, TypeNode * inReturnType, std::list<StmtNode *> * inBody)
+	: DeclNode(p), myID(inID), myFormals(inFormals), myReturnType(inReturnType), myBody(inBody) {}
 	IDNode * ID() const { return myID; }
-	std::list<FormalDeclNode *> * getFormals() const{
-		return myFormals;
-	}
-	TypeNode getTypeNode() { return myRetType };
 	void unparse(std::ostream& out, int indent) override;
 	virtual bool nameAnalysis(SymbolTable * symTab) override;
+	std::list<FormalDeclNode *> * getFormals() const { return myFormals; }
+	TypeNode * getTypeNode() { return myReturnType; };
 private:
 	IDNode * myID;
 	std::list<FormalDeclNode *> * myFormals;
-	TypeNode * myRetType;
+	TypeNode * myReturnType;
 	std::list<StmtNode *> * myBody;
 };
 
@@ -311,6 +306,7 @@ public:
 	  std::list<StmtNode *> * bodyIn)
 	: StmtNode(p), myCond(condIn), myBody(bodyIn){ }
 	void unparse(std::ostream& out, int indent) override;
+	virtual bool nameAnalysis(SymbolTable *) override;
 private:
 	ExpNode * myCond;
 	std::list<StmtNode *> * myBody;
@@ -324,6 +320,7 @@ public:
 	: StmtNode(p), myCond(condIn),
 	  myBodyTrue(bodyTrueIn), myBodyFalse(bodyFalseIn) { }
 	void unparse(std::ostream& out, int indent) override;
+	virtual bool nameAnalysis(SymbolTable *) override;
 private:
 	ExpNode * myCond;
 	std::list<StmtNode *> * myBodyTrue;
@@ -336,6 +333,7 @@ public:
 	  std::list<StmtNode *> * bodyIn)
 	: StmtNode(p), myCond(condIn), myBody(bodyIn){ }
 	void unparse(std::ostream& out, int indent) override;
+	virtual bool nameAnalysis(SymbolTable *) override;
 private:
 	ExpNode * myCond;
 	std::list<StmtNode *> * myBody;
@@ -503,7 +501,7 @@ public:
 	ClassTypeNode(const Position * p, IDNode * inID)
 	: TypeNode(p), myID(inID){}
 	void unparse(std::ostream& out, int indent) override;
-	Type typeStr() override { return CHAR; }
+	Type typeStr() override { return CLASS; }
 private:
 	IDNode * myID;
 };
@@ -513,6 +511,7 @@ public:
 	PerfectTypeNode(const Position * p, TypeNode * inSub)
 	: TypeNode(p), mySub(inSub){}
 	void unparse(std::ostream& out, int indent) override;
+	Type typeStr() override { return PERFECT; }
 private:
 	TypeNode * mySub;
 };

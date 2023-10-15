@@ -22,7 +22,7 @@ public:
 	ProgramNode * ast;
 
 private:
-	NameAnalysis(){
+	NameAnalysis() {
 		//This private constructor means the only way
 		// to get a nameAnalysis instance is through
 		// NameAnalysis::build, forcing the 

@@ -54,7 +54,7 @@ void FnDeclNode::unparse(std::ostream& out, int indent){
 		formal->unparse(out, 0);
 	}
 	out << ") ";
-	myRetType->unparse(out, 0); 
+	myReturnType->unparse(out, 0); 
 	out << " ";
 	out << " {\n";
 	for(auto stmt : *myBody){
@@ -323,6 +323,7 @@ void IDNode::unparse(std::ostream& out, int indent){
 	out << name;
 	//TODO: should add something here to print out the 
 	// symbol attached during name analysis
+	if(mySymbol) out << this->getSymbol()->typeAnnotation();
 }
 
 void IDNode::unparseNested(std::ostream& out){

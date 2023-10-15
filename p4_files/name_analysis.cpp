@@ -4,6 +4,14 @@
 
 namespace drewno_mars{
 
+static bool bodyNameAnalysis(std::list<StmtNode *> * stmtList, SymbolTable * symTab) {
+	bool bodyNameAnalysisOk = true;
+	for (auto node : *stmtList) {
+		bodyNameAnalysisOk = node->nameAnalysis(symTab) && bodyNameAnalysisOk;
+	}
+	return bodyNameAnalysisOk;
+}
+
 //TODO here is a subset of the nodes needed to do nameAnalysis, 
 // you should add the rest to allow for a complete treatment
 // of any AST
@@ -14,39 +22,129 @@ bool ASTNode::nameAnalysis(SymbolTable * symTab){
 }
 
 bool ProgramNode::nameAnalysis(SymbolTable * symTab){
+	symTab->createScopeTable();
 	bool res = true;
 	for (auto global : *myGlobals){
 		res = global->nameAnalysis(symTab) && res;
 	}
+	symTab->dropScopeTable();
 	return res;
 }
 
 bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool nameAnalysisOk = true;
-	std::cerr << "I'm in VarDeclNode throwing an error."
-		<< " use GDB or this will look like a segfault!" << std::endl;
-	std::cerr << std::flush;
-	throw new ToDoError("[DELETE ME] I'm a varDecl"
-		" you should add the information from my"	
-		" subtree to the symbolTable as a new"	
-		" entry in the current scope table"
-	);
+	VarSymbol * newSymbol = new VarSymbol(this->getTypeNode()->typeStr());
+	LookUpResult result = symTab->insert(myID->getName(), newSymbol);
+	switch (result) {
+		case INVALID_TYPE: {
+			Report::fatal(pos(), "Invalid type in declaration");
+			nameAnalysisOk = false;
+			break;
+		}
+		case MULTIPLE_DECL_ID: {
+			Report::fatal(pos(), "Multiply declared identifier");
+			nameAnalysisOk = false;
+			break;
+		}
+		case INVALID_MULTIPLE_ID: {
+			Report::fatal(pos(), "Multiply declared identifier");
+			Report::fatal(pos(), "Invalid type in declaration");
+			nameAnalysisOk = false;
+			break;
+		}
+		default: break;
+	}
 	return nameAnalysisOk;
 }
 
 bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool nameAnalysisOk = true;
-	throw new ToDoError("[DELETE ME] I'm an fnDecl."
-		" you should add and make current a new"	
-		" scope table for my body"
-	);
+	FnSymbol * newSymbol = new FnSymbol(this->getTypeNode()->typeStr());
+	LookUpResult result = symTab->insert(myID->getName(), newSymbol);
+
+	switch (result) {
+		case INVALID_TYPE: {
+			Report::fatal(pos(), "Invalid type in declaration");
+			nameAnalysisOk = false;
+			break;
+		}
+		case MULTIPLE_DECL_ID: {
+			Report::fatal(pos(), "Multiply declared identifier");
+			nameAnalysisOk = false;
+			break;
+		}
+		case INVALID_MULTIPLE_ID: {
+			Report::fatal(pos(), "Invalid type in declaration");
+			Report::fatal(pos(), "Multiply declared identifier");
+			nameAnalysisOk = false;
+			break;
+		}
+		default: break;
+	}
+
+	//Create a new scope context at top of stack
+	symTab->createScopeTable();
+	for (FormalDeclNode * formal : *getFormals()){
+		nameAnalysisOk = formal->nameAnalysis(symTab) && nameAnalysisOk;
+		newSymbol->insertParams(formal->getTypeNode()->typeStr());
+	}
+	symTab->dropScopeTable();
+
 	return nameAnalysisOk;
 }
 
 bool IntTypeNode::nameAnalysis(SymbolTable* symTab){
-	// Name analysis may never even recurse down to IntTypeNode,
-	// but if it does, just return true to indicate that 
-	// name analysis has not failed, and add nothing to the symbol table
+	//Name analysis may never even recurse down to IntTypeNode,
+	//but if it does, just return true to indicate that 
+	//name analysis has not failed, and add nothing to the symbol table
 	return true;
 }
+
+bool IDNode::nameAnalysis(SymbolTable * symTab) {
+	/*When an IDNode is discovered as part of a use or definition,
+	check if that use or definition corresponds to a valid symbol and,
+	if appropriate, builds a link between the IDNode and the symbol */
+	SemSymbol * symbol = symTab->symbolTableLookUp(this->getName());
+	if(symbol) {
+		attachSymbol(symbol);
+		return true;
+	}
+	Report::fatal(pos(), "Undeclared identifier");
+	return false;
+}
+
+bool IfStmtNode::nameAnalysis(SymbolTable * symTab) {
+	bool nameAnalysisOk = true;
+	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
+	symTab->createScopeTable();
+	nameAnalysisOk = bodyNameAnalysis(myBody, symTab) && nameAnalysisOk;
+	symTab->dropScopeTable();
+	return nameAnalysisOk;
+}
+
+bool IfElseStmtNode::nameAnalysis(SymbolTable * symTab) {
+	bool nameAnalysisOk = true;
+	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
+	symTab->createScopeTable();
+	nameAnalysisOk = bodyNameAnalysis(myBodyTrue, symTab) && nameAnalysisOk;
+	symTab->dropScopeTable();
+
+	// name analysis on false branch
+	symTab->createScopeTable();
+	nameAnalysisOk = bodyNameAnalysis(myBodyFalse, symTab) && nameAnalysisOk;
+	symTab->dropScopeTable();
+
+	return nameAnalysisOk;
+}
+
+bool WhileStmtNode::nameAnalysis(SymbolTable * symTab) {
+	bool nameAnalysisOk = true;
+	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
+
+	symTab->createScopeTable();
+	nameAnalysisOk = bodyNameAnalysis(myBody, symTab) && nameAnalysisOk;
+	symTab->dropScopeTable();
+	return nameAnalysisOk;
+}
+
 }

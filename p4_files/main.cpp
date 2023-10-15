@@ -99,8 +99,7 @@ static drewno_mars::NameAnalysis * doNameAnalysis(const char * inputPath){
 }
 
 
-int 
-main( const int argc, const char **argv )
+int main( const int argc, const char **argv )
 {
 	if (argc <= 1){ usageAndDie(); }
 	std::ifstream * input = new std::ifstream(argv[1]);
