@@ -1,6 +1,7 @@
 #include "ast.hpp"
 #include "symbol_table.hpp"
 #include "errors.hpp"
+#include "errName.hpp"
 
 namespace drewno_mars{
 
@@ -36,19 +37,27 @@ bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 	VarSymbol * newSymbol = new VarSymbol(this->getTypeNode()->typeStr());
 	LookUpResult result = symTab->insert(myID->getName(), newSymbol);
 	switch (result) {
+		case SUCCESS: {
+			myID->attachSymbol(newSymbol);
+			break;
+		}
+		case FAIL: {
+			nameAnalysisOk = false;
+			break;
+		}
 		case INVALID_TYPE: {
-			Report::fatal(pos(), "Invalid type in declaration");
+			NameErr::badVarType(pos());
 			nameAnalysisOk = false;
 			break;
 		}
 		case MULTIPLE_DECL_ID: {
-			Report::fatal(pos(), "Multiply declared identifier");
+			NameErr::multiDecl(pos());
 			nameAnalysisOk = false;
 			break;
 		}
 		case INVALID_MULTIPLE_ID: {
-			Report::fatal(pos(), "Multiply declared identifier");
-			Report::fatal(pos(), "Invalid type in declaration");
+			NameErr::multiDecl(pos());
+			NameErr::badVarType(pos());
 			nameAnalysisOk = false;
 			break;
 		}
@@ -61,21 +70,28 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool nameAnalysisOk = true;
 	FnSymbol * newSymbol = new FnSymbol(this->getTypeNode()->typeStr());
 	LookUpResult result = symTab->insert(myID->getName(), newSymbol);
-
 	switch (result) {
+		case SUCCESS: {
+			myID->attachSymbol(newSymbol);
+			break;
+		}
+		case FAIL: {
+			nameAnalysisOk = false;
+			break;
+		}
 		case INVALID_TYPE: {
-			Report::fatal(pos(), "Invalid type in declaration");
+			NameErr::badVarType(pos());
 			nameAnalysisOk = false;
 			break;
 		}
 		case MULTIPLE_DECL_ID: {
-			Report::fatal(pos(), "Multiply declared identifier");
+			NameErr::multiDecl(pos());
 			nameAnalysisOk = false;
 			break;
 		}
 		case INVALID_MULTIPLE_ID: {
-			Report::fatal(pos(), "Invalid type in declaration");
-			Report::fatal(pos(), "Multiply declared identifier");
+			NameErr::multiDecl(pos());
+			NameErr::badVarType(pos());
 			nameAnalysisOk = false;
 			break;
 		}
@@ -88,6 +104,7 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 		nameAnalysisOk = formal->nameAnalysis(symTab) && nameAnalysisOk;
 		newSymbol->insertParams(formal->getTypeNode()->typeStr());
 	}
+	// nameAnalysisOk = bodyNameAnalysis(myBody, symTab);
 	symTab->dropScopeTable();
 
 	return nameAnalysisOk;
@@ -125,11 +142,13 @@ bool IfStmtNode::nameAnalysis(SymbolTable * symTab) {
 bool IfElseStmtNode::nameAnalysis(SymbolTable * symTab) {
 	bool nameAnalysisOk = true;
 	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
+
+	//name analysis on true branch
 	symTab->createScopeTable();
 	nameAnalysisOk = bodyNameAnalysis(myBodyTrue, symTab) && nameAnalysisOk;
 	symTab->dropScopeTable();
 
-	// name analysis on false branch
+	//name analysis on false branch
 	symTab->createScopeTable();
 	nameAnalysisOk = bodyNameAnalysis(myBodyFalse, symTab) && nameAnalysisOk;
 	symTab->dropScopeTable();

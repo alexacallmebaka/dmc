@@ -16,19 +16,21 @@ string TypeToStr(Type t) {
 }
 
 string VarSymbol::typeAnnotation() {
-	return TypeToStr(this->getType());
+	stringstream ss;
+	ss << "{" << TypeToStr(this->getType()) << "}";
+	return ss.str();
 }
 
 string FnSymbol::typeAnnotation() {
 	stringstream ss;
-	ss << "(";
+	ss << "{(";
 	int currentIndex = 0;
 	for(Type t : paramTypes) {
 		ss << TypeToStr(t);
 		currentIndex++;
-		if(currentIndex < int(paramTypes.size()) - 1) ss << ",";
+		if(currentIndex < int(paramTypes.size())) ss << ",";
 	}
-	ss << ")" << "->" << TypeToStr(this->getType());
+	ss << ")" << "->" << TypeToStr(this->getType()) << "}";
 	return ss.str();
 }
 

@@ -302,7 +302,6 @@ void PerfectTypeNode::unparse(std::ostream& out, int indent){
 	mySub->unparse(out, 0);
 }
 
-
 void VoidTypeNode::unparse(std::ostream& out, int indent){
 	doIndent(out, indent);
 	out << "void";
