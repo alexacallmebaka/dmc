@@ -1,4 +1,4 @@
-f{(int,bool->int)} : (arg1{int} : int,arg2{bool}: bool) int {
+f{(int,bool)->int} : (arg1{int} : int,arg2{bool} : bool) int {
 }
 
 g{()->void} : () void {
