@@ -7,16 +7,13 @@ namespace drewno_mars{
 
 static bool bodyNameAnalysis(std::list<StmtNode *> * stmtList, SymbolTable * symTab) {
 	bool bodyNameAnalysisOk = true;
-	for (auto node : *stmtList) {
+	for (StmtNode * node : *stmtList) {
 		bodyNameAnalysisOk = node->nameAnalysis(symTab) && bodyNameAnalysisOk;
 	}
 	return bodyNameAnalysisOk;
 }
 
-//TODO here is a subset of the nodes needed to do nameAnalysis, 
-// you should add the rest to allow for a complete treatment
-// of any AST
-
+//subclasses of ASTNode {{{1
 bool ASTNode::nameAnalysis(SymbolTable * symTab){
 	throw new ToDoError("This function should have"
 		"been overriden in the subclass!");
@@ -31,7 +28,127 @@ bool ProgramNode::nameAnalysis(SymbolTable * symTab){
 	symTab->dropScopeTable();
 	return res;
 }
+//1}}}
 
+//subclasses of ExpNode {{{2
+bool BinaryExpNode::nameAnalysis(SymbolTable * symTab) {
+	return (myExp1->nameAnalysis(symTab) 
+			&& myExp2->nameAnalysis(symTab));
+}
+bool CallExpNode::nameAnalysis(SymbolTable * symTab) {
+	bool nameAnalysisOk = true;
+	nameAnalysisOk = myCallee->nameAnalysis(symTab) && nameAnalysisOk;
+
+	for (ExpNode * expNode : * myArgs){
+		nameAnalysisOk = expNode->nameAnalysis(symTab) && nameAnalysisOk;
+	}
+	return nameAnalysisOk;
+}
+bool UnaryExpNode::nameAnalysis(SymbolTable * symTab) {
+	return myExp->nameAnalysis(symTab);
+}
+//2}}}
+
+//subclasses of StmtNode {{{1
+bool AssignStmtNode::nameAnalysis(SymbolTable * symTab) {
+	return myDst->nameAnalysis(symTab) && mySrc->nameAnalysis(symTab);
+}
+bool CallStmtNode::nameAnalysis(SymbolTable * symTab) {
+	return myCallExp->nameAnalysis(symTab);
+}
+bool ExitStmtNode::nameAnalysis(SymbolTable * symTab) {
+	return true;
+}
+bool GiveStmtNode::nameAnalysis(SymbolTable * symTab) {
+	return mySrc->nameAnalysis(symTab);
+}
+bool IfElseStmtNode::nameAnalysis(SymbolTable * symTab) {
+	bool nameAnalysisOk = true;
+	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
+
+	//name analysis on true branch
+	symTab->createScopeTable();
+	nameAnalysisOk = bodyNameAnalysis(myBodyTrue, symTab) && nameAnalysisOk;
+	symTab->dropScopeTable();
+
+	//name analysis on false branch
+	symTab->createScopeTable();
+	nameAnalysisOk = bodyNameAnalysis(myBodyFalse, symTab) && nameAnalysisOk;
+	symTab->dropScopeTable();
+
+	return nameAnalysisOk;
+}
+bool IfStmtNode::nameAnalysis(SymbolTable * symTab) {
+	bool nameAnalysisOk = true;
+	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
+	symTab->createScopeTable();
+	nameAnalysisOk = bodyNameAnalysis(myBody, symTab) && nameAnalysisOk;
+	symTab->dropScopeTable();
+	return nameAnalysisOk;
+}
+bool PostDecStmtNode::nameAnalysis(SymbolTable * symTab) {
+	return myLoc->nameAnalysis(symTab);
+}
+bool PostIncStmtNode::nameAnalysis(SymbolTable * symTab) {
+	return myLoc->nameAnalysis(symTab);
+}
+bool ReturnStmtNode::nameAnalysis(SymbolTable * symTab) {
+	return myExp->nameAnalysis(symTab);
+}
+bool TakeStmtNode::nameAnalysis(SymbolTable * symTab) {
+	return myDst->nameAnalysis(symTab);
+}
+bool WhileStmtNode::nameAnalysis(SymbolTable * symTab) {
+	bool nameAnalysisOk = true;
+	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
+
+	symTab->createScopeTable();
+	nameAnalysisOk = bodyNameAnalysis(myBody, symTab) && nameAnalysisOk;
+	symTab->dropScopeTable();
+	return nameAnalysisOk;
+}
+//1}}}
+
+//subclasses of TypeNode {{{1
+bool IntTypeNode::nameAnalysis(SymbolTable* symTab){
+	//Name analysis may never even recurse down to IntTypeNode,
+	//but if it does, just return true to indicate that 
+	//name analysis has not failed, and add nothing to the symbol table
+	return true;
+}
+bool BoolTypeNode::nameAnalysis(SymbolTable* symTab){
+	return true;
+}
+bool ClassTypeNode::nameAnalysis(SymbolTable* symTab){
+	return myID->nameAnalysis(symTab);
+}
+bool PerfectTypeNode::nameAnalysis(SymbolTable* symTab){
+	return mySub->nameAnalysis(symTab);
+}
+bool VoidTypeNode::nameAnalysis(SymbolTable* symTab){
+	return true;
+}
+//1}}}
+
+//subclasses of LocNode {{{1
+bool IDNode::nameAnalysis(SymbolTable * symTab) {
+	/*When an IDNode is discovered as part of a use or definition,
+	check if that use or definition corresponds to a valid symbol and,
+	if appropriate, builds a link between the IDNode and the symbol */
+	SemSymbol * symbol = symTab->symbolTableLookUp(this->getName());
+	if(symbol) {
+		attachSymbol(symbol);
+		return true;
+	}
+	Report::fatal(pos(), "Undeclared identifier");
+	return false;
+}
+bool MemberFieldExpNode::nameAnalysis(SymbolTable * symTab) {
+	return myBase->nameAnalysis(symTab) && myField->nameAnalysis(symTab);
+}
+//1}}}
+
+//subclasses of DeclNode {{{1
 bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool nameAnalysisOk = true;
 	VarSymbol * newSymbol = new VarSymbol(this->getTypeNode()->typeStr());
@@ -65,7 +182,6 @@ bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 	}
 	return nameAnalysisOk;
 }
-
 bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool nameAnalysisOk = true;
 	FnSymbol * newSymbol = new FnSymbol(this->getTypeNode()->typeStr());
@@ -104,66 +220,11 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 		nameAnalysisOk = formal->nameAnalysis(symTab) && nameAnalysisOk;
 		newSymbol->insertParams(formal->getTypeNode()->typeStr());
 	}
-	// nameAnalysisOk = bodyNameAnalysis(myBody, symTab);
+	cout << "Function body: " << myBody->size() << endl;
+	nameAnalysisOk = bodyNameAnalysis(myBody, symTab);
 	symTab->dropScopeTable();
 
 	return nameAnalysisOk;
 }
-
-bool IntTypeNode::nameAnalysis(SymbolTable* symTab){
-	//Name analysis may never even recurse down to IntTypeNode,
-	//but if it does, just return true to indicate that 
-	//name analysis has not failed, and add nothing to the symbol table
-	return true;
-}
-
-bool IDNode::nameAnalysis(SymbolTable * symTab) {
-	/*When an IDNode is discovered as part of a use or definition,
-	check if that use or definition corresponds to a valid symbol and,
-	if appropriate, builds a link between the IDNode and the symbol */
-	SemSymbol * symbol = symTab->symbolTableLookUp(this->getName());
-	if(symbol) {
-		attachSymbol(symbol);
-		return true;
-	}
-	Report::fatal(pos(), "Undeclared identifier");
-	return false;
-}
-
-bool IfStmtNode::nameAnalysis(SymbolTable * symTab) {
-	bool nameAnalysisOk = true;
-	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
-	symTab->createScopeTable();
-	nameAnalysisOk = bodyNameAnalysis(myBody, symTab) && nameAnalysisOk;
-	symTab->dropScopeTable();
-	return nameAnalysisOk;
-}
-
-bool IfElseStmtNode::nameAnalysis(SymbolTable * symTab) {
-	bool nameAnalysisOk = true;
-	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
-
-	//name analysis on true branch
-	symTab->createScopeTable();
-	nameAnalysisOk = bodyNameAnalysis(myBodyTrue, symTab) && nameAnalysisOk;
-	symTab->dropScopeTable();
-
-	//name analysis on false branch
-	symTab->createScopeTable();
-	nameAnalysisOk = bodyNameAnalysis(myBodyFalse, symTab) && nameAnalysisOk;
-	symTab->dropScopeTable();
-
-	return nameAnalysisOk;
-}
-
-bool WhileStmtNode::nameAnalysis(SymbolTable * symTab) {
-	bool nameAnalysisOk = true;
-	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
-
-	symTab->createScopeTable();
-	nameAnalysisOk = bodyNameAnalysis(myBody, symTab) && nameAnalysisOk;
-	symTab->dropScopeTable();
-	return nameAnalysisOk;
-}
-
+//1}}}
 }

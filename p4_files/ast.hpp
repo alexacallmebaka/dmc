@@ -121,7 +121,7 @@ class ProgramNode : public ASTNode{
 public:
 	ProgramNode(std::list<DeclNode *> * globalsIn);
 	void unparse(std::ostream&, int) override;
-	virtual bool nameAnalysis(SymbolTable *) override;
+	bool nameAnalysis(SymbolTable *) override;
 private:
 	std::list<DeclNode *> * myGlobals;
 };
@@ -253,6 +253,7 @@ public:
 	AssignStmtNode(const Position * p, LocNode * inDst, ExpNode * inSrc)
 	: StmtNode(p), myDst(inDst), mySrc(inSrc){ }
 	void unparse(std::ostream& out, int indent) override;
+	bool nameAnalysis(SymbolTable * symTab) override;
 private:
 	LocNode * myDst;
 	ExpNode * mySrc;
@@ -263,6 +264,7 @@ public:
 	TakeStmtNode(const Position * p, LocNode * inDst)
 	: StmtNode(p), myDst(inDst){ }
 	void unparse(std::ostream& out, int indent) override;
+	bool nameAnalysis(SymbolTable * symTab) override;
 private:
 	LocNode * myDst;
 };
@@ -272,6 +274,7 @@ public:
 	GiveStmtNode(const Position * p, ExpNode * inSrc)
 	: StmtNode(p), mySrc(inSrc){ }
 	void unparse(std::ostream& out, int indent) override;
+	bool nameAnalysis(SymbolTable * symTab) override;
 private:
 	ExpNode * mySrc;
 };
@@ -280,6 +283,7 @@ class ExitStmtNode : public StmtNode{
 public:
 	ExitStmtNode(const Position * p) : StmtNode(p) { }
 	void unparse(std::ostream& out, int indent) override;
+	bool nameAnalysis(SymbolTable * symTab) override;
 };
 
 class PostDecStmtNode : public StmtNode{
@@ -287,6 +291,7 @@ public:
 	PostDecStmtNode(const Position * p, LocNode * inLoc)
 	: StmtNode(p), myLoc(inLoc){ }
 	void unparse(std::ostream& out, int indent) override;
+	bool nameAnalysis(SymbolTable * symTab) override;
 private:
 	LocNode * myLoc;
 };
@@ -296,6 +301,7 @@ public:
 	PostIncStmtNode(const Position * p, LocNode * inLoc)
 	: StmtNode(p), myLoc(inLoc){ }
 	void unparse(std::ostream& out, int indent) override;
+	bool nameAnalysis(SymbolTable * symTab) override;
 private:
 	LocNode * myLoc;
 };
@@ -306,7 +312,7 @@ public:
 	  std::list<StmtNode *> * bodyIn)
 	: StmtNode(p), myCond(condIn), myBody(bodyIn){ }
 	void unparse(std::ostream& out, int indent) override;
-	virtual bool nameAnalysis(SymbolTable *) override;
+	bool nameAnalysis(SymbolTable * symTab) override;
 private:
 	ExpNode * myCond;
 	std::list<StmtNode *> * myBody;
@@ -320,7 +326,7 @@ public:
 	: StmtNode(p), myCond(condIn),
 	  myBodyTrue(bodyTrueIn), myBodyFalse(bodyFalseIn) { }
 	void unparse(std::ostream& out, int indent) override;
-	virtual bool nameAnalysis(SymbolTable *) override;
+	bool nameAnalysis(SymbolTable *) override;
 private:
 	ExpNode * myCond;
 	std::list<StmtNode *> * myBodyTrue;
@@ -333,7 +339,7 @@ public:
 	  std::list<StmtNode *> * bodyIn)
 	: StmtNode(p), myCond(condIn), myBody(bodyIn){ }
 	void unparse(std::ostream& out, int indent) override;
-	virtual bool nameAnalysis(SymbolTable *) override;
+	bool nameAnalysis(SymbolTable *) override;
 private:
 	ExpNode * myCond;
 	std::list<StmtNode *> * myBody;
@@ -344,6 +350,7 @@ public:
 	ReturnStmtNode(const Position * p, ExpNode * exp)
 	: StmtNode(p), myExp(exp){ }
 	void unparse(std::ostream& out, int indent) override;
+	bool nameAnalysis(SymbolTable * symTab) override;
 private:
 	ExpNode * myExp;
 };
@@ -355,6 +362,7 @@ public:
 	: ExpNode(p), myCallee(inCallee), myArgs(inArgs){ }
 	void unparse(std::ostream& out, int indent) override;
 	void unparseNested(std::ostream& out) override;
+	bool nameAnalysis(SymbolTable * symTab) override;
 private:
 	LocNode * myCallee;
 	std::list<ExpNode *> * myArgs;
@@ -366,6 +374,7 @@ public:
 	IDNode * inField)
 	: LocNode(p), myBase(inBase), myField(inField) { }
 	void unparse(std::ostream& out, int indent) override;
+	bool nameAnalysis(SymbolTable * symTab) override;
 private:
 	LocNode * myBase;
 	IDNode * myField;
@@ -375,6 +384,7 @@ class BinaryExpNode : public ExpNode{
 public:
 	BinaryExpNode(const Position * p, ExpNode * lhs, ExpNode * rhs)
 	: ExpNode(p), myExp1(lhs), myExp2(rhs) { }
+	bool nameAnalysis(SymbolTable * symTab) override;
 protected:
 	ExpNode * myExp1;
 	ExpNode * myExp2;
@@ -471,6 +481,7 @@ public:
 		this->myExp = expIn;
 	}
 	virtual void unparse(std::ostream& out, int indent) override = 0;
+	bool nameAnalysis(SymbolTable * symTab) override;
 protected:
 	ExpNode * myExp;
 };
@@ -494,6 +505,7 @@ public:
 	VoidTypeNode(const Position * p) : TypeNode(p){}
 	void unparse(std::ostream& out, int indent) override;
 	Type typeStr() override { return VOID; }
+	bool nameAnalysis(SymbolTable *) override;
 };
 
 class ClassTypeNode : public TypeNode{
@@ -502,6 +514,7 @@ public:
 	: TypeNode(p), myID(inID){}
 	void unparse(std::ostream& out, int indent) override;
 	Type typeStr() override { return CLASS; }
+	bool nameAnalysis(SymbolTable *) override;
 private:
 	IDNode * myID;
 };
@@ -512,6 +525,7 @@ public:
 	: TypeNode(p), mySub(inSub){}
 	void unparse(std::ostream& out, int indent) override;
 	Type typeStr() override { return PERFECT; }
+	bool nameAnalysis(SymbolTable *) override;
 private:
 	TypeNode * mySub;
 };
@@ -529,6 +543,7 @@ public:
 	BoolTypeNode(const Position * p): TypeNode(p) { }
 	void unparse(std::ostream& out, int indent) override;
 	Type typeStr() override { return BOOL; }
+	bool nameAnalysis(SymbolTable *) override;
 };
 
 class IntLitNode : public ExpNode{
@@ -587,6 +602,7 @@ public:
 	CallStmtNode(const Position * p, CallExpNode * expIn)
 	: StmtNode(p), myCallExp(expIn){ }
 	void unparse(std::ostream& out, int indent) override;
+	bool nameAnalysis(SymbolTable * symTab) override;
 private:
 	CallExpNode * myCallExp;
 };
