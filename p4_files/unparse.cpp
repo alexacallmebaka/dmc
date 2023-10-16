@@ -31,7 +31,7 @@ void ClassDefnNode::unparse(std::ostream& out, int indent){
 	out << " : class {\n";
 	for(auto member : *myMembers){
 		member->unparse(out, indent+1);
-	}  
+	}
 	out << "};\n";
 }
 
@@ -56,7 +56,7 @@ void FnDeclNode::unparse(std::ostream& out, int indent){
 	out << ") ";
 	myReturnType->unparse(out, 0); 
 	out << " ";
-	out << " {\n";
+	out << "{\n";
 	for(auto stmt : *myBody){
 		stmt->unparse(out, indent+1);
 	}

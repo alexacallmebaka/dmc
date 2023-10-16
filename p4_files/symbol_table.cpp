@@ -8,9 +8,9 @@ string TypeToStr(Type t) {
 	switch(t) {
 		case INT: return "int";
 		case BOOL: return "bool";
-		case CHAR: return "char";
-		case CLASS: return "class";
+		case STRING: return "string";
 		case PERFECT: return "perfect";
+		case CLASS: return "class";
 		default: return "void";
 	}
 }

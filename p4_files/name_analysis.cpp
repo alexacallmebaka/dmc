@@ -31,9 +31,11 @@ bool ProgramNode::nameAnalysis(SymbolTable * symTab){
 //1}}}
 
 //subclasses of ExpNode {{{2
+bool ExpNode::nameAnalysis(SymbolTable * symTab) {
+	return true;
+}
 bool BinaryExpNode::nameAnalysis(SymbolTable * symTab) {
-	return (myExp1->nameAnalysis(symTab) 
-			&& myExp2->nameAnalysis(symTab));
+	return (myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab));
 }
 bool CallExpNode::nameAnalysis(SymbolTable * symTab) {
 	bool nameAnalysisOk = true;
@@ -149,6 +151,9 @@ bool MemberFieldExpNode::nameAnalysis(SymbolTable * symTab) {
 //1}}}
 
 //subclasses of DeclNode {{{1
+bool DeclNode::nameAnalysis(SymbolTable * symTab) {
+	return true;
+}
 bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool nameAnalysisOk = true;
 	VarSymbol * newSymbol = new VarSymbol(this->getTypeNode()->typeStr());
@@ -213,14 +218,11 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 		}
 		default: break;
 	}
-
-	//Create a new scope context at top of stack
 	symTab->createScopeTable();
 	for (FormalDeclNode * formal : *getFormals()){
 		nameAnalysisOk = formal->nameAnalysis(symTab) && nameAnalysisOk;
 		newSymbol->insertParams(formal->getTypeNode()->typeStr());
 	}
-	cout << "Function body: " << myBody->size() << endl;
 	nameAnalysisOk = bodyNameAnalysis(myBody, symTab);
 	symTab->dropScopeTable();
 

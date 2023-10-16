@@ -136,6 +136,7 @@ protected:
 	ExpNode(const Position * p) : ASTNode(p){ }
 public:
 	virtual void unparseNested(std::ostream& out);
+	bool nameAnalysis(SymbolTable *) override;
 };
 
 /** A memory location. LocNodes subclass ExpNode
@@ -177,6 +178,7 @@ public:
 	TypeNode(const Position * p) : ASTNode(p){ }
 	void unparse(std::ostream&, int) override = 0;
 	virtual Type typeStr() = 0;
+	// bool nameAnalysis(SymbolTable *) override;
 };
 
 class StmtNode : public ASTNode{
@@ -193,6 +195,7 @@ class DeclNode : public StmtNode{
 public:
 	DeclNode(const Position * p) : StmtNode(p){ }
 	void unparse(std::ostream& out, int indent) override =0;
+	bool nameAnalysis(SymbolTable * symTab) override;
 };
 
 class ClassDefnNode : public DeclNode{

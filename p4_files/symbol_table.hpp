@@ -19,7 +19,7 @@ namespace drewno_mars{
 enum Kind {VAR, FN};
 
 // define a Type type
-enum Type {CLASS, INT, BOOL, CHAR, VOID, PERFECT};
+enum Type {INT, BOOL, STRING, VOID, CLASS, PERFECT};
 
 //A semantic symbol, which represents a single
 // variable, function, etc. Semantic symbols 
