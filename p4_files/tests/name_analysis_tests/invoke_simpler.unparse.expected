@@ -1,3 +1,0 @@
-a{int} : int;
-f{()->void} : () void {
-}
