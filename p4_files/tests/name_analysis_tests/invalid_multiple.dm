@@ -1,6 +1,6 @@
 main : () int {
   a : bool;
   a = true;
-  a : void;
+  a : string;
   return a;
 }
