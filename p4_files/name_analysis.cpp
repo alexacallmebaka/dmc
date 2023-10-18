@@ -168,18 +168,18 @@ bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 			break;
 		}
 		case INVALID_TYPE: {
-			NameErr::badVarType(pos());
+			NameErr::badVarType(myID->pos());
 			nameAnalysisOk = false;
 			break;
 		}
 		case MULTIPLE_DECL_ID: {
-			NameErr::multiDecl(pos());
+			NameErr::multiDecl(myID->pos());
 			nameAnalysisOk = false;
 			break;
 		}
 		case INVALID_MULTIPLE_ID: {
-			NameErr::multiDecl(pos());
-			NameErr::badVarType(pos());
+			NameErr::badVarType(myID->pos());
+			NameErr::multiDecl(myID->pos());
 			nameAnalysisOk = false;
 			break;
 		}
@@ -201,18 +201,18 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 			break;
 		}
 		case INVALID_TYPE: {
-			NameErr::badVarType(pos());
+			NameErr::badVarType(myID->pos());
 			nameAnalysisOk = false;
 			break;
 		}
 		case MULTIPLE_DECL_ID: {
-			NameErr::multiDecl(pos());
+			NameErr::multiDecl(myID->pos());
 			nameAnalysisOk = false;
 			break;
 		}
 		case INVALID_MULTIPLE_ID: {
-			NameErr::multiDecl(pos());
-			NameErr::badVarType(pos());
+			NameErr::badVarType(myID->pos());
+			NameErr::multiDecl(myID->pos());
 			nameAnalysisOk = false;
 			break;
 		}
