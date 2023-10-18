@@ -19,4 +19,4 @@ all: $(TESTS)
 	exit $$FAIL || echo "All tests passed"
 
 clean:
-	rm -f *.unparse *.err
+	rm -f *.unparse *.err *.out
