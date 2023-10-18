@@ -8,7 +8,6 @@ string TypeToStr(Type t) {
 	switch(t) {
 		case INT: return "int";
 		case BOOL: return "bool";
-		case STRING: return "string";
 		case PERFECT: return "perfect";
 		case CLASS: return "class";
 		default: return "void";
@@ -43,7 +42,7 @@ ScopeTable::ScopeTable(){
 }
 
 LookUpResult ScopeTable::addDecl(string id, SemSymbol * symbol) {
-	bool invalidType = (symbol->getKind() == VAR && symbol->getType() == VOID);
+	bool invalidType = (symbol->getKind() == VAR && !(symbol->getType() == INT || symbol->getType() == BOOL || symbol->getType() == PERFECT));
 	auto existingSymbol = (symbols->find(id) != symbols->end()) ? symbols->find(id)->second : nullptr;
 	if (invalidType && !existingSymbol) return INVALID_TYPE;
 	else if(!invalidType && existingSymbol) return MULTIPLE_DECL_ID;
