@@ -1,0 +1,6 @@
+func{(int)->int} : (x{int} : int) int  {
+  if (x{int} == 0){
+      return x{int};
+  }
+  return func{(int)->int}(x{int});
+}
