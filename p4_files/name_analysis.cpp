@@ -156,7 +156,7 @@ bool DeclNode::nameAnalysis(SymbolTable * symTab) {
 }
 bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool nameAnalysisOk = true;
-	VarSymbol * newSymbol = new VarSymbol(this->getTypeNode()->typeStr());
+	VarSymbol * newSymbol = new VarSymbol(this->getTypeNode());
 	LookUpResult result = symTab->insert(myID->getName(), newSymbol);
 	switch (result) {
 		case SUCCESS: {
@@ -189,7 +189,7 @@ bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 }
 bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool nameAnalysisOk = true;
-	FnSymbol * newSymbol = new FnSymbol(this->getTypeNode()->typeStr());
+	FnSymbol * newSymbol = new FnSymbol(this->getTypeNode());
 	LookUpResult result = symTab->insert(myID->getName(), newSymbol);
 	switch (result) {
 		case SUCCESS: {
@@ -221,10 +221,48 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 	symTab->createScopeTable();
 	for (FormalDeclNode * formal : *getFormals()){
 		nameAnalysisOk = formal->nameAnalysis(symTab) && nameAnalysisOk;
-		newSymbol->insertParams(formal->getTypeNode()->typeStr());
+		newSymbol->insertParams(formal->getTypeNode());
 	}
 	nameAnalysisOk = bodyNameAnalysis(myBody, symTab);
 	symTab->dropScopeTable();
+
+	return nameAnalysisOk;
+}
+bool ClassDefnNode::nameAnalysis(SymbolTable * symTab) {
+	bool nameAnalysisOk = true;
+	// ClassSymbol * newSymbol = new ClassSymbol();
+	// LookUpResult result = symTab->insert(myID->getName(), newSymbol);
+	// switch (result) {
+	// 	case SUCCESS: {
+	// 		myID->attachSymbol(newSymbol);
+	// 		break;
+	// 	}
+	// 	case FAIL: {
+	// 		nameAnalysisOk = false;
+	// 		break;
+	// 	}
+	// 	case INVALID_TYPE: {
+	// 		NameErr::badVarType(myID->pos());
+	// 		nameAnalysisOk = false;
+	// 		break;
+	// 	}
+	// 	case MULTIPLE_DECL_ID: {
+	// 		NameErr::multiDecl(myID->pos());
+	// 		nameAnalysisOk = false;
+	// 		break;
+	// 	}
+	// 	case INVALID_MULTIPLE_ID: {
+	// 		NameErr::badVarType(myID->pos());
+	// 		NameErr::multiDecl(myID->pos());
+	// 		nameAnalysisOk = false;
+	// 		break;
+	// 	}
+	// }
+	// symTab->createScopeTable();
+	// for (DeclNode * decl : * myMembers) {
+	// 	nameAnalysisOk = decl->nameAnalysis(symTab) && nameAnalysisOk;
+	// }
+	// symTab->dropScopeTable();
 
 	return nameAnalysisOk;
 }

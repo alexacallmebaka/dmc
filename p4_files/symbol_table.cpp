@@ -1,29 +1,32 @@
-#include <sstream>
 #include "symbol_table.hpp"
 using namespace std;
 
 namespace drewno_mars{
 
-string VarSymbol::typeAnnotation() {
-	stringstream ss;
-	ss << "{" << this->getType() << "}";
-	return ss.str();
+void VarSymbol::typeAnnotation(std::ostream& out, int indent) {
+	out << "{";
+	this->getType()->unparse(out, 0);
+	out << "}";
 }
 
-string FnSymbol::typeAnnotation() {
-	stringstream ss;
-	ss << "{(";
+void FnSymbol::typeAnnotation(std::ostream& out, int indent) {
+	out << "{(";
 	int currentIndex = 0;
-	for(string t : paramTypes) {
-		ss << t;
+	for(TypeNode* t : paramTypes) {
+		t->unparse(out, 0);
 		currentIndex++;
-		if(currentIndex < int(paramTypes.size())) ss << ",";
+		if(currentIndex < int(paramTypes.size())) out << ",";
 	}
-	ss << ")" << "->" << this->getType() << "}";
-	return ss.str();
+	out << ")" << "->";
+	this->getType()->unparse(out, 0);
+	out << "}";
 }
 
-void FnSymbol::insertParams(string t) {
+void ClassSymbol::typeAnnotation(std::ostream& out, int indent) {
+	this->getType()->unparse(out, 0);
+}
+
+void FnSymbol::insertParams(TypeNode* t) {
 	paramTypes.push_back(t);
 }
 
@@ -32,7 +35,7 @@ ScopeTable::ScopeTable(){
 }
 
 LookUpResult ScopeTable::addDecl(string id, SemSymbol * symbol) {
-	bool invalidType = (symbol->getKind() == "var" && !(symbol->getType() == "int" || symbol->getType() == "bool" || symbol->getType() == "perfect" || symbol->getType() == "class"));
+	bool invalidType = (symbol->getKind() == "var" && !(symbol->getType()->typeStr() == "int" || symbol->getType()->typeStr() == "bool" || symbol->getType()->typeStr() == "perfect" || symbol->getType()->typeStr() == "class"));
 	auto existingSymbol = (symbols->find(id) != symbols->end()) ? symbols->find(id)->second : nullptr;
 	if (invalidType && !existingSymbol) return INVALID_TYPE;
 	else if(!invalidType && existingSymbol) return MULTIPLE_DECL_ID;

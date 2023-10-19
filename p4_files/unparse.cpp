@@ -1,7 +1,10 @@
 #include "ast.hpp"
 #include "errors.hpp"
+#include "symbol_table.hpp"
 
 namespace drewno_mars{
+
+class SemSymbol;
 
 static void doIndent(std::ostream& out, int indent){
 	for (int k = 0 ; k < indent; k++){ out << "    "; }
@@ -50,7 +53,7 @@ void FnDeclNode::unparse(std::ostream& out, int indent){
 	bool firstFormal = true;
 	for(auto formal : *myFormals){
 		if (firstFormal) { firstFormal = false; }
-		else { out << ", "; }
+		else { out << ","; }
 		formal->unparse(out, 0);
 	}
 	out << ") ";
@@ -61,7 +64,7 @@ void FnDeclNode::unparse(std::ostream& out, int indent){
 		stmt->unparse(out, indent+1);
 	}
 	doIndent(out, indent);
-	out << "}\n";
+	out << "}\n\n";
 }
 
 void AssignStmtNode::unparse(std::ostream& out, int indent){
@@ -322,7 +325,7 @@ void IDNode::unparse(std::ostream& out, int indent){
 	out << name;
 	//TODO: should add something here to print out the 
 	// symbol attached during name analysis
-	if(mySymbol) out << this->getSymbol()->typeAnnotation();
+	if(mySymbol) this->getSymbol()->typeAnnotation(out, 0);
 }
 
 void IDNode::unparseNested(std::ostream& out){

@@ -1,8 +1,10 @@
 #ifndef DREWNO_MARS_SYMBOL_TABLE_HPP
 #define DREWNO_MARS_SYMBOL_TABLE_HPP
 #include <string>
+#include <iostream>
 #include <unordered_map>
 #include <list>
+#include "ast.hpp"
 
 using namespace std;
 
@@ -25,31 +27,38 @@ class SemSymbol {
 	// and functions to get/set those fields
 	protected:
 		string kind;
-		string type;
+		TypeNode * type;
 	public:
 		SemSymbol() {}
-		SemSymbol(string k, string t) : kind(k), type(t) {}
+		SemSymbol(string k, TypeNode* t) : kind(k), type(t) {}
 		string getKind() const { return kind; }
-		string getType() const { return type; }
+		TypeNode* getType() const { return type; }
 		void setKind(string k) { this->kind = k; }
-		void setType(string t) { this->type = t; }
-		virtual string typeAnnotation() = 0;
+		void setType(TypeNode* t) { this->type = t; }
+		virtual void typeAnnotation(std::ostream& out, int indent) = 0;
 };
 
 class VarSymbol : public SemSymbol{
 	public:
-		VarSymbol(string t) : SemSymbol("var", t) {}
-		std::string typeAnnotation();
+		VarSymbol(TypeNode* t) : SemSymbol("var", t) {}
+		void typeAnnotation(std::ostream& out, int indent);
 };
 
 class FnSymbol : public SemSymbol{
 	private:
-		std::list<string> paramTypes;
+		std::list<TypeNode*> paramTypes;
 	public:
-		FnSymbol(string t) : SemSymbol("fn", t) {}
-		FnSymbol(string t, std::list<string>& l) : SemSymbol("fn", t), paramTypes(l) {}
-		std::string typeAnnotation();
-		void insertParams(string t);
+		FnSymbol(TypeNode* t) : SemSymbol("fn", t) {}
+		FnSymbol(TypeNode* t, std::list<TypeNode*> & l) : SemSymbol("fn", t), paramTypes(l) {}
+		std::list<TypeNode*> getParamTypes() { return paramTypes;}
+		void typeAnnotation(std::ostream& out, int indent);
+		void insertParams(TypeNode* t);
+};
+
+class ClassSymbol : public SemSymbol{
+	public:
+		ClassSymbol(TypeNode* t) : SemSymbol("class", t) {}
+		void typeAnnotation(std::ostream& out, int indent);
 };
 
 //A single scope. The symbol table is broken down into a 

@@ -6,11 +6,13 @@
 #include <string.h>
 #include <list>
 #include "tokens.hpp"
-#include "symbol_table.hpp"
 
 namespace drewno_mars {
+using namespace std;
 
+class SemSymbol;
 class NameAnalysis;
+
 
 class SymbolTable;
 class SemSymbol;
