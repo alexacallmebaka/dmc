@@ -35,7 +35,7 @@ ScopeTable::ScopeTable(){
 }
 
 LookUpResult ScopeTable::addDecl(string id, SemSymbol * symbol) {
-	bool invalidType = (symbol->getKind() == "var" && !(symbol->getType()->typeStr() == "int" || symbol->getType()->typeStr() == "bool" || symbol->getType()->typeStr() == "perfect" || symbol->getType()->typeStr() == "class"));
+	bool invalidType = (symbol->getKind() == "var" && !(symbol->getType()->typeStr() == "int" || symbol->getType()->typeStr() == "bool"));
 	auto existingSymbol = (symbols->find(id) != symbols->end()) ? symbols->find(id)->second : nullptr;
 	if (invalidType && !existingSymbol) return INVALID_TYPE;
 	else if(!invalidType && existingSymbol) return MULTIPLE_DECL_ID;
