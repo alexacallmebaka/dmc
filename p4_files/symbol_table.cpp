@@ -23,7 +23,7 @@ void FnSymbol::typeAnnotation(std::ostream& out, int indent) {
 }
 
 void ClassSymbol::typeAnnotation(std::ostream& out, int indent) {
-	this->getType()->unparse(out, 0);
+	out << "{" << name << "}";
 }
 
 void FnSymbol::insertParams(TypeNode* t) {

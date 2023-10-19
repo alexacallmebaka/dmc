@@ -35,7 +35,7 @@ class SemSymbol {
 		TypeNode* getType() const { return type; }
 		void setKind(string k) { this->kind = k; }
 		void setType(TypeNode* t) { this->type = t; }
-		virtual void typeAnnotation(std::ostream& out, int indent) = 0;
+		virtual void typeAnnotation(std::ostream& out, int indent) { };
 };
 
 class VarSymbol : public SemSymbol{
@@ -56,8 +56,11 @@ class FnSymbol : public SemSymbol{
 };
 
 class ClassSymbol : public SemSymbol{
+	private:
+		string name;
 	public:
-		ClassSymbol(TypeNode* t) : SemSymbol("class", t) {}
+		ClassSymbol() : SemSymbol("class", nullptr) {}
+		void setName(string name) {this->name = name;}
 		void typeAnnotation(std::ostream& out, int indent);
 };
 
