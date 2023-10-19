@@ -1,0 +1,6 @@
+ClassA{ClassA} : class {
+    a{perfect bool} : perfect bool = true;
+    print{(int)->int} : (a{int} : int) int  {
+        return a{int};
+    }
+};
