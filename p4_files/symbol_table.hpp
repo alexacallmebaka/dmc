@@ -15,12 +15,6 @@ using namespace std;
 
 namespace drewno_mars{
 
-// define a Kind type
-enum Kind {VAR, FN};
-
-// define a Type type
-enum Type {INT, BOOL, VOID, CLASS, PERFECT};
-
 //A semantic symbol, which represents a single
 // variable, function, etc. Semantic symbols 
 // exist for the lifetime of a scope in the 
@@ -30,31 +24,32 @@ class SemSymbol {
 	// (i.e. the kind of the symbol (either a variable or function)
 	// and functions to get/set those fields
 	protected:
-		Kind kind;
-		Type type;
+		string kind;
+		string type;
 	public:
-		SemSymbol(Kind k, Type t) : kind(k), type(t) {}
-		Kind getKind() const { return kind; }
-		Type getType() const { return type; }
-		void setKind(Kind k) { this->kind = k; }
-		void setKind(Type t) { this->type = t; }
+		SemSymbol() {}
+		SemSymbol(string k, string t) : kind(k), type(t) {}
+		string getKind() const { return kind; }
+		string getType() const { return type; }
+		void setKind(string k) { this->kind = k; }
+		void setType(string t) { this->type = t; }
 		virtual string typeAnnotation() = 0;
 };
 
 class VarSymbol : public SemSymbol{
 	public:
-		VarSymbol(Type t) : SemSymbol(VAR, t) {}
+		VarSymbol(string t) : SemSymbol("var", t) {}
 		std::string typeAnnotation();
 };
 
 class FnSymbol : public SemSymbol{
 	private:
-		std::list<Type> paramTypes;
+		std::list<string> paramTypes;
 	public:
-		FnSymbol(Type t) : SemSymbol(FN, t) {}
-		FnSymbol(Type t, std::list<Type>& l) : SemSymbol(FN, t), paramTypes(l) {}
+		FnSymbol(string t) : SemSymbol("fn", t) {}
+		FnSymbol(string t, std::list<string>& l) : SemSymbol("fn", t), paramTypes(l) {}
 		std::string typeAnnotation();
-		void insertParams(Type t);
+		void insertParams(string t);
 };
 
 //A single scope. The symbol table is broken down into a 
@@ -63,7 +58,7 @@ class FnSymbol : public SemSymbol{
 // the globals scope will be represented by a ScopeTable,
 // and the contents of each function can be represented by
 // a ScopeTable.
-enum LookUpResult {SUCCESS, FAIL, MULTIPLE_DECL_ID, UNDECLARED_ID, INVALID_TYPE, INVALID_MULTIPLE_ID};
+enum LookUpResult {SUCCESS, FAIL, MULTIPLE_DECL_ID, INVALID_TYPE, INVALID_MULTIPLE_ID};
 
 class ScopeTable {
 	public:
