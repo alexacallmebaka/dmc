@@ -177,7 +177,7 @@ class TypeNode : public ASTNode{
 public:
 	TypeNode(const Position * p) : ASTNode(p){ }
 	void unparse(std::ostream&, int) override = 0;
-	virtual Type typeStr() = 0;
+	virtual string typeStr() = 0;
 	// bool nameAnalysis(SymbolTable *) override;
 };
 
@@ -204,6 +204,7 @@ public:
 	: DeclNode(p), myID(inID), myMembers(inMembers){ }
 	void unparse(std::ostream& out, int indent) override;
 	IDNode * ID(){ return myID; }
+	bool nameAnalysis(SymbolTable *) override;
 private:
 	IDNode * myID;
 	std::list<DeclNode *> * myMembers;
@@ -507,7 +508,7 @@ class VoidTypeNode : public TypeNode{
 public:
 	VoidTypeNode(const Position * p) : TypeNode(p){}
 	void unparse(std::ostream& out, int indent) override;
-	Type typeStr() override { return VOID; }
+	string typeStr() override { return "void"; }
 	bool nameAnalysis(SymbolTable *) override;
 };
 
@@ -516,7 +517,7 @@ public:
 	ClassTypeNode(const Position * p, IDNode * inID)
 	: TypeNode(p), myID(inID){}
 	void unparse(std::ostream& out, int indent) override;
-	Type typeStr() override { return CLASS; }
+	string typeStr() override { return "class"; }
 	bool nameAnalysis(SymbolTable *) override;
 private:
 	IDNode * myID;
@@ -527,7 +528,7 @@ public:
 	PerfectTypeNode(const Position * p, TypeNode * inSub)
 	: TypeNode(p), mySub(inSub){}
 	void unparse(std::ostream& out, int indent) override;
-	Type typeStr() override { return PERFECT; }
+	string typeStr() override { return "perfect"; }
 	bool nameAnalysis(SymbolTable *) override;
 private:
 	TypeNode * mySub;
@@ -538,14 +539,14 @@ public:
 	IntTypeNode(const Position * p): TypeNode(p){}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *) override;
-	Type typeStr() override { return INT; }
+	string typeStr() override { return "int"; }
 };
 
 class BoolTypeNode : public TypeNode{
 public:
 	BoolTypeNode(const Position * p): TypeNode(p) { }
 	void unparse(std::ostream& out, int indent) override;
-	Type typeStr() override { return BOOL; }
+	string typeStr() override { return "bool"; }
 	bool nameAnalysis(SymbolTable *) override;
 };
 
