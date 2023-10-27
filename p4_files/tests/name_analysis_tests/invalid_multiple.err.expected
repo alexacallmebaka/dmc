@@ -1,0 +1,4 @@
+FATAL [4,7]-[4,13]: Invalid type in declaration
+FATAL [4,3]-[4,4]: Invalid type in declaration
+FATAL [4,3]-[4,4]: Multiply declared identifier
+Name Analysis Failed

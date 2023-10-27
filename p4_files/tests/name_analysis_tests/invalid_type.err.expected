@@ -1,0 +1,6 @@
+FATAL [1,1]-[1,5]: Invalid type in declaration
+FATAL [2,5]-[2,11]: Invalid type in declaration
+FATAL [2,1]-[2,2]: Invalid type in declaration
+FATAL [3,6]-[3,10]: Invalid type in declaration
+FATAL [3,18]-[3,22]: Invalid type in declaration
+Name Analysis Failed

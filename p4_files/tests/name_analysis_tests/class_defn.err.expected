@@ -1,0 +1,4 @@
+FATAL [5,28]-[5,32]: Invalid type in declaration
+FATAL [5,16]-[5,26]: Invalid type in declaration
+FATAL [6,8]-[6,12]: Undeclared identifier
+Name Analysis Failed

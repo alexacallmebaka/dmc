@@ -1,0 +1,6 @@
+main  :   () void {
+
+if( 1 ) { a : int =0; }
+else { perish:bool;
+}
+}

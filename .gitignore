@@ -1,3 +1,4 @@
 *.d
 *.o
 dmc
+*/.DS_Store

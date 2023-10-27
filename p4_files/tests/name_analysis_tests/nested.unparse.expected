@@ -1,0 +1,13 @@
+f{(int, bool)->int} : (arg1{int} : int, arg2{bool} : bool) int  {
+}
+g{()->void} : () void  {
+    a{int} : int;
+    if (true){
+        b{int} : int;
+    } else {
+        b{int} : int = 1;
+        give b{int};
+    }
+    f{(int, bool)->int}(a{int}, true);
+    g{()->void}();
+}

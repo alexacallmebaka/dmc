@@ -1,0 +1,3 @@
+global1: int;
+global2: int;
+global3: classval;

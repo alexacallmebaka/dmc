@@ -1,0 +1,4 @@
+main:()void {a();}
+c:()void {d(3+3,7,hsjkdh);}
+x:()bool {d(true);}
+s:()bool {c--y(true);}
