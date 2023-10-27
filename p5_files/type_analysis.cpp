@@ -61,6 +61,36 @@ void StmtNode::typeAnalysis(TypeAnalysis * ta){
 	TODO("Implement me in the subclass");
 }
 
+
+void GiveStmtNode::typeAnalysis(TypeAnalysis * ta){
+  mySrc->typeAnalysis(ta);  
+  const DataType * srcType = ta->nodeType(mySrc);
+
+	if (srcType->asError()){
+		ta->nodeType(this, ErrorType::produce());
+	}
+
+  if ( srcType->isBool() || srcType->isInt() || srcType->isString() ) {
+    //give statement doesn't have a type, so we just return.
+    return;
+  }
+ 
+ //cant test these until we implement more stuff... but i think this works 
+  if (srcType->asFn()) {
+  
+    ta->errOutputFn(mySrc->pos());
+  
+  } else if (srcType->asClass()) {
+  
+    ta->errOutputClass(this->pos());
+  
+  } else if (srcType->isVoid()) {
+    
+    ta->errOutputVoid(mySrc->pos());
+
+  }
+
+}
 void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){
 	//TODO: Note that this function is incomplete. 
 	// and needs additional code
@@ -122,6 +152,7 @@ void VarDeclNode::typeAnalysis(TypeAnalysis * ta){
 	ta->nodeType(this, BasicType::produce(VOID));
 }
 
+
 void IDNode::typeAnalysis(TypeAnalysis * ta){
 	// IDs never fail type analysis and always
 	// yield the type of their symbol (which
@@ -141,6 +172,10 @@ void TrueNode::typeAnalysis(TypeAnalysis * ta){
 
 void FalseNode::typeAnalysis(TypeAnalysis * ta){
 	ta->nodeType(this, BasicType::produce(BOOL));
+}
+
+void StrLitNode::typeAnalysis(TypeAnalysis * ta){
+	ta->nodeType(this, BasicType::produce(STRING));
 }
 
 }

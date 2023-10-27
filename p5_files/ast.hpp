@@ -136,7 +136,7 @@ public:
 	}
 	virtual TypeNode * getTypeNode(){ return myType; }
 	bool nameAnalysis(SymbolTable * symTab) override;
-	void typeAnalysis(TypeAnalysis * typing) override;
+	virtual void typeAnalysis(TypeAnalysis * typing) override;
 private:
 	IDNode * myID;
 	TypeNode * myType;
@@ -209,6 +209,7 @@ public:
 	: StmtNode(p), mySrc(inSrc){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	virtual void typeAnalysis(TypeAnalysis *) override;
 private:
 	ExpNode * mySrc;
 };
@@ -509,6 +510,7 @@ public:
 	}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *) override;
+	virtual void typeAnalysis(TypeAnalysis *) override;
 private:
 	 const std::string myStr;
 };
@@ -521,7 +523,7 @@ public:
 	}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
-	void typeAnalysis(TypeAnalysis *) override;
+	virtual void typeAnalysis(TypeAnalysis *) override;
 };
 
 class FalseNode : public ExpNode{
@@ -532,7 +534,7 @@ public:
 	}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
-	void typeAnalysis(TypeAnalysis *) override;
+	virtual void typeAnalysis(TypeAnalysis *) override;
 };
 
 class MagicNode : public ExpNode{
