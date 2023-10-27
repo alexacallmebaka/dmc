@@ -521,6 +521,7 @@ public:
 	}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis *) override;
 };
 
 class FalseNode : public ExpNode{
@@ -531,6 +532,7 @@ public:
 	}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis *) override;
 };
 
 class MagicNode : public ExpNode{

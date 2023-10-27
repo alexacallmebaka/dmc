@@ -135,4 +135,12 @@ void IntLitNode::typeAnalysis(TypeAnalysis * ta){
 	ta->nodeType(this, BasicType::produce(INT));
 }
 
+void TrueNode::typeAnalysis(TypeAnalysis * ta){
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
+
+void FalseNode::typeAnalysis(TypeAnalysis * ta){
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
+
 }
