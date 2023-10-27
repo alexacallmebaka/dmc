@@ -101,16 +101,16 @@ public:
 		return newType;
 	}
 
-	virtual const BasicType * asBasic() const { return subType->asBasic(); }
-	virtual const FnType * asFn() const { return subType->asFn(); }
-	virtual const ClassType * asClass() const { return subType->asClass(); }
-	virtual const ErrorType * asError() const { return subType->asError(); }
-	virtual bool isVoid() const { return subType->isVoid(); }
-	virtual bool isInt() const { return subType->isInt(); }
-	virtual bool isBool() const { return subType->isBool(); }
-	virtual bool isString() const { return subType->isString(); }
-	virtual bool isClass() const { return subType->isClass(); }
-	virtual bool isPerfect() const { return true; }
+	virtual const BasicType * asBasic() const override { return subType->asBasic(); }
+	virtual const FnType * asFn() const override { return subType->asFn(); }
+	virtual const ClassType * asClass() const override { return subType->asClass(); }
+	virtual const ErrorType * asError() const override { return subType->asError(); }
+	virtual bool isVoid() const override { return subType->isVoid(); }
+	virtual bool isInt() const override { return subType->isInt(); }
+	virtual bool isBool() const override { return subType->isBool(); }
+	virtual bool isString() const override { return subType->isString(); }
+	virtual bool isClass() const override { return subType->isClass(); }
+	virtual bool isPerfect() const override { return true; }
 
 	virtual std::string getString() const override {
 		return "perfect " + subType->getString();
@@ -226,14 +226,14 @@ class TypeList : public DataType{
 public:
 	static TypeList * produce(const std::list<TypeNode *> * typeNodes);
 	size_t count() const{ return types->size(); }
-	size_t getSize() const {
+	size_t getSize() const override {
 		size_t res = 0;
 		for (auto t : *types){
 			res += t->getSize();
 		}
 		return res;
 	}
-	std::string getString() const{
+	std::string getString() const override {
 		std::string res;
 		bool first = true;
 		for (auto t : *types){
@@ -243,7 +243,7 @@ public:
 		}
 		return res;
 	}
-	bool validVarType() const { return false; }
+	bool validVarType() const override { return false; }
 	const std::list<const DataType *> * getTypes() const { return types; }
 
 private:
@@ -264,14 +264,14 @@ public:
 		myMap[this] = fields;
 	}
 
-	virtual const ClassType * asClass() const { return this; }
+	virtual const ClassType * asClass() const override { return this; }
 	virtual bool isClass() const override { return true; }
 
 	SemSymbol * fieldLookup(std::string name);
 
 	std::string getString() const override;
 
-	virtual size_t getSize() const{
+	virtual size_t getSize() const override {
 		//calculate the size of the class
 		throw new ToDoError("iterate over non-fn fields");
 	}	
