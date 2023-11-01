@@ -113,6 +113,7 @@ public:
 	virtual std::string getName() override { 
 		return myID->getName(); 
 	}
+	void typeAnalysis(TypeAnalysis *) override;
 	IDNode * ID(){ return myID; }
 	bool nameAnalysis(SymbolTable * symTab) override;
 private:
