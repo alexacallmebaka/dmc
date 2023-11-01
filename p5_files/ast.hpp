@@ -323,6 +323,8 @@ public:
 	: ExpNode(p), myExp1(lhs), myExp2(rhs) { }
 	bool nameAnalysis(SymbolTable * symTab) override;
 	virtual void typeAnalysis(TypeAnalysis * typing) override = 0;
+	ExpNode * getExp1() {return myExp1;}
+	ExpNode * getExp2() {return myExp2;}
 protected:
 	ExpNode * myExp1;
 	ExpNode * myExp2;

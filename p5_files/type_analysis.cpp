@@ -237,7 +237,9 @@ void NotNode::typeAnalysis(TypeAnalysis * ta) {
 /* Arithmetic operations: Binary - PlusNode, MinusNode, TimesNode, DivideNode, Unary - NegNode, postincrement, postdecrement
 -> Operands are both int - the result type is int. In all illegal cases, the result type is ERROR.
 */
-void PlusNode::typeAnalysis(TypeAnalysis * ta) {
+void arithmeticOpsTypeAnalysis(BinaryExpNode * node, TypeAnalysis * ta) {
+	ExpNode * myExp1 = node->getExp1();
+	ExpNode * myExp2 = node->getExp2();
 	myExp1->typeAnalysis(ta);
 	myExp2->typeAnalysis(ta);
 	bool isValid = true;
@@ -245,7 +247,7 @@ void PlusNode::typeAnalysis(TypeAnalysis * ta) {
 	const DataType * type2 = ta->nodeType(myExp2);
 
 	if (type1->asError() || type2->asError()) {
-		ta->nodeType(this, ErrorType::produce());
+		ta->nodeType(node, ErrorType::produce());
 		isValid = false;
 		return;
 	}
@@ -259,91 +261,26 @@ void PlusNode::typeAnalysis(TypeAnalysis * ta) {
 		isValid = false;
 	}
 	if (isValid) {
-		ta->nodeType(this, BasicType::produce(INT));
+		ta->nodeType(node, BasicType::produce(INT));
 	} else {
-		ta->nodeType(this, ErrorType::produce());
+		ta->nodeType(node, ErrorType::produce());
 	}
+}
+
+void PlusNode::typeAnalysis(TypeAnalysis * ta) {
+	arithmeticOpsTypeAnalysis(this, ta);
 }
 
 void MinusNode::typeAnalysis(TypeAnalysis * ta) {
-	myExp1->typeAnalysis(ta);
-	myExp2->typeAnalysis(ta);
-	bool isValid = true;
-	const DataType * type1 = ta->nodeType(myExp1);
-	const DataType * type2 = ta->nodeType(myExp2);
-
-	if (type1->asError() || type2->asError()) {
-		ta->nodeType(this, ErrorType::produce());
-		isValid = false;
-		return;
-	}
-	if (!(type1->isInt())) {
-		ta->errMathOpd(myExp1->pos());
-		isValid = false;
-	}
-	if (!(type2->isInt())) {
-		ta->errMathOpd(myExp2->pos());
-		isValid = false;
-	}
-	if (isValid) {
-		ta->nodeType(this, BasicType::produce(INT));
-	} else {
-		ta->nodeType(this, ErrorType::produce());
-	}
+	arithmeticOpsTypeAnalysis(this, ta);
 }
 
 void TimesNode::typeAnalysis(TypeAnalysis * ta) {
-	myExp1->typeAnalysis(ta);
-	myExp2->typeAnalysis(ta);
-	bool isValid = true;
-	const DataType * type1 = ta->nodeType(myExp1);
-	const DataType * type2 = ta->nodeType(myExp2);
-
-	if (type1->asError() || type2->asError()) {
-		ta->nodeType(this, ErrorType::produce());
-		isValid = false;
-		return;
-	}
-	if (!(type1->isInt())) {
-		ta->errMathOpd(myExp1->pos());
-		isValid = false;
-	}
-	if (!(type2->isInt())) {
-		ta->errMathOpd(myExp2->pos());
-		isValid = false;
-	}
-	if (isValid) {
-		ta->nodeType(this, BasicType::produce(INT));
-	} else {
-		ta->nodeType(this, ErrorType::produce());
-	}
+	arithmeticOpsTypeAnalysis(this, ta);
 }
 
 void DivideNode::typeAnalysis(TypeAnalysis * ta) {
-	myExp1->typeAnalysis(ta);
-	myExp2->typeAnalysis(ta);
-	bool isValid = true;
-	const DataType * type1 = ta->nodeType(myExp1);
-	const DataType * type2 = ta->nodeType(myExp2);
-
-	if (type1->asError() || type2->asError()) {
-		ta->nodeType(this, ErrorType::produce());
-		isValid = false;
-		return;
-	}
-	if (!(type1->isInt())) {
-		ta->errMathOpd(myExp1->pos());
-		isValid = false;
-	}
-	if (!(type2->isInt())) {
-		ta->errMathOpd(myExp2->pos());
-		isValid = false;
-	}
-	if (isValid) {
-		ta->nodeType(this, BasicType::produce(INT));
-	} else {
-		ta->nodeType(this, ErrorType::produce());
-	}
+	arithmeticOpsTypeAnalysis(this, ta);
 }
 
 void NegNode::typeAnalysis(TypeAnalysis * ta) {
@@ -361,7 +298,6 @@ void NegNode::typeAnalysis(TypeAnalysis * ta) {
 	}
 	ta->nodeType(this, BasicType::produce(INT));
 }
-
 void PostIncStmtNode::typeAnalysis(TypeAnalysis * ta) {
 	const DataType * expType = myLoc->getSymbol()->getDataType();
 	if (expType->asError()) {
@@ -386,7 +322,6 @@ void PostDecStmtNode::typeAnalysis(TypeAnalysis * ta) {
 		return;
 	}
 }
-
 
 /* Relational operations: LessNode, LessEqNode, GreaterNode, GreaterEqNode
 -> Both operands are int. The result type is bool in legal cases, ERROR otherwise.
