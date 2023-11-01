@@ -200,6 +200,7 @@ public:
 	: StmtNode(p), myDst(inDst){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis *) override;
 private:
 	LocNode * myDst;
 };

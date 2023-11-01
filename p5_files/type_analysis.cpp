@@ -87,7 +87,26 @@ void GiveStmtNode::typeAnalysis(TypeAnalysis * ta){
   } else if (srcType->isVoid()) {
     ta->errOutputVoid(mySrc->pos());
   }
+}
 
+// take operations
+void TakeStmtNode::typeAnalysis(TypeAnalysis * ta) {
+	myDst->typeAnalysis(ta);
+
+	const DataType * dstType = ta->nodeType(myDst);
+
+	if (dstType->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	if ((dstType->isBool() || dstType->isInt())) {
+		return;
+	}
+	if (dstType->asFn()) {
+    ta->errReadFn(myDst->pos());
+  } else if (dstType->asClass()) {
+    ta->errReadClass(myDst->pos());
+  }
 }
 
 /*Assignment access: AssignStmtNode*/
