@@ -177,42 +177,41 @@ void StrLitNode::typeAnalysis(TypeAnalysis * ta){
 /*Logical operators and conditions: Binary - AndNode, OrNode, Unary - NotNode
 -> All operands are bool. The result type is bool in legal cases, ERROR otherwise.
 */
-void AndNode::typeAnalysis(TypeAnalysis * ta) {
+void logicalOpsTypeAnalysis(BinaryExpNode * node, TypeAnalysis * ta) {
+	ExpNode * myExp1 = node->getExp1();
+	ExpNode * myExp2 = node->getExp2();
 	myExp1->typeAnalysis(ta);
 	myExp2->typeAnalysis(ta);
+	bool isValid = true;
 	const DataType * type1 = ta->nodeType(myExp1);
 	const DataType * type2 = ta->nodeType(myExp2);
 
 	if (type1->asError() || type2->asError()) {
-		ta->nodeType(this, ErrorType::produce());
+		ta->nodeType(node, ErrorType::produce());
+		isValid = false;
 		return;
 	}
 
-	if (!(type1->isBool() && type2->isBool())) {
-		ta->errLogicOpd(pos());
-		ta->nodeType(this, ErrorType::produce());
-		return;
+	if (!(type1->isBool())) {
+		ta->errLogicOpd(myExp1->pos());
+		isValid = false;
 	}
-	ta->nodeType(this, BasicType::produce(BOOL));
+	if (!(type2->isBool())) {
+		ta->errLogicOpd(myExp2->pos());
+		isValid = false;
+	}
+	if (isValid) {
+		ta->nodeType(node, BasicType::produce(BOOL));
+	} else {
+		ta->nodeType(node, ErrorType::produce());
+	}
+}
+void AndNode::typeAnalysis(TypeAnalysis * ta) {
+	logicalOpsTypeAnalysis(this, ta);
 }
 
 void OrNode::typeAnalysis(TypeAnalysis * ta) {
-	myExp1->typeAnalysis(ta);
-	myExp2->typeAnalysis(ta);
-	const DataType * type1 = ta->nodeType(myExp1);
-	const DataType * type2 = ta->nodeType(myExp2);
-
-	if (type1->asError() || type2->asError()) {
-		ta->nodeType(this, ErrorType::produce());
-		return;
-	}
-
-	if (!(type1->isBool() && type2->isBool())) {
-		ta->errLogicOpd(pos());
-		ta->nodeType(this, ErrorType::produce());
-		return;
-	}
-	ta->nodeType(this, BasicType::produce(BOOL));
+	logicalOpsTypeAnalysis(this, ta);
 }
 void NotNode::typeAnalysis(TypeAnalysis * ta) {
 	myExp->typeAnalysis(ta);
@@ -222,8 +221,8 @@ void NotNode::typeAnalysis(TypeAnalysis * ta) {
 		ta->nodeType(this, ErrorType::produce());
 		return;
 	}
-	if (!(expType->isBool())) {
-		ta->errLogicOpd(pos());
+	if (!(expType->isInt())) {
+		ta->errLogicOpd(myExp->pos());
 		ta->nodeType(this, ErrorType::produce());
 		return;
 	}
