@@ -51,6 +51,13 @@ void FnDeclNode::typeAnalysis(TypeAnalysis * ta){
 	// the current function
 
 	//Note: this function may need extra code
+	//we can use this code for FnDecl?
+	// IDNode * myId = this->ID();
+	// SemSymbol * nameSymbol = myID->getSymbol();
+	// const DataType * nameType = nameSymbol->getDataType();
+	// const FnType * symAsFn = nameType->asFn();
+
+	// ta->setCurrentFnType(symAsFn);
 
 	for (auto stmt : *myBody){
 		stmt->typeAnalysis(ta);
@@ -63,34 +70,27 @@ void StmtNode::typeAnalysis(TypeAnalysis * ta){
 
 
 void GiveStmtNode::typeAnalysis(TypeAnalysis * ta){
-  mySrc->typeAnalysis(ta);  
+  mySrc->typeAnalysis(ta);
   const DataType * srcType = ta->nodeType(mySrc);
-
 	if (srcType->asError()){
 		ta->nodeType(this, ErrorType::produce());
 	}
-
   if ( srcType->isBool() || srcType->isInt() || srcType->isString() ) {
     //give statement doesn't have a type, so we just return.
     return;
   }
- 
  //cant test these until we implement more stuff... but i think this works 
   if (srcType->asFn()) {
-  
     ta->errOutputFn(mySrc->pos());
-  
   } else if (srcType->asClass()) {
-  
     ta->errOutputClass(this->pos());
-  
   } else if (srcType->isVoid()) {
-    
     ta->errOutputVoid(mySrc->pos());
-
   }
 
 }
+
+/*Assignment access: AssignStmtNode*/
 void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){
 	//TODO: Note that this function is incomplete. 
 	// and needs additional code
@@ -177,5 +177,319 @@ void FalseNode::typeAnalysis(TypeAnalysis * ta){
 void StrLitNode::typeAnalysis(TypeAnalysis * ta){
 	ta->nodeType(this, BasicType::produce(STRING));
 }
+
+/*Logical operators and conditions: Binary - AndNode, OrNode, Unary - NotNode
+-> All operands are bool. The result type is bool in legal cases, ERROR otherwise.
+*/
+void AndNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+	const DataType * type1 = ta->nodeType(myExp1);
+	const DataType * type2 = ta->nodeType(myExp2);
+
+	if (type1->asError() || type2->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+
+	if (!(type1->isBool() && type2->isBool())) {
+		ta->errLogicOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
+
+void OrNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+	const DataType * type1 = ta->nodeType(myExp1);
+	const DataType * type2 = ta->nodeType(myExp2);
+
+	if (type1->asError() || type2->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+
+	if (!(type1->isBool() && type2->isBool())) {
+		ta->errLogicOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
+void NotNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp->typeAnalysis(ta);
+	const DataType * expType = ta->nodeType(myExp);
+
+	if (expType->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	if (!(expType->isBool())) {
+		ta->errLogicOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
+
+/* Arithmetic operations: Binary - PlusNode, MinusNode, TimesNode, DivideNode, Unary - NegNode, postincrement, postdecrement
+-> Operands are both int - the result type is int. In all illegal cases, the result type is ERROR.
+*/
+void PlusNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+	const DataType * type1 = ta->nodeType(myExp1);
+	const DataType * type2 = ta->nodeType(myExp2);
+
+	if (type1->asError() || type2->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+
+	if (!(type1->isInt() && type2->isInt())) {
+		ta->errMathOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(INT));
+}
+
+void MinusNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+	const DataType * type1 = ta->nodeType(myExp1);
+	const DataType * type2 = ta->nodeType(myExp2);
+
+	if (type1->asError() || type2->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+
+	if (!(type1->isInt() && type2->isInt())) {
+		ta->errMathOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(INT));
+}
+
+void TimesNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+	const DataType * type1 = ta->nodeType(myExp1);
+	const DataType * type2 = ta->nodeType(myExp2);
+
+	if (type1->asError() || type2->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+
+	if (!(type1->isInt() && type2->isInt())) {
+		ta->errMathOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(INT));
+}
+
+void DivideNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+	const DataType * type1 = ta->nodeType(myExp1);
+	const DataType * type2 = ta->nodeType(myExp2);
+
+	if (type1->asError() || type2->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+
+	if (!(type1->isInt() && type2->isInt())) {
+		ta->errMathOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(INT));
+}
+
+void NegNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp->typeAnalysis(ta);
+	const DataType * expType = ta->nodeType(myExp);
+
+	if (expType->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	if (!(expType->isInt())) {
+		ta->errMathOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(INT));
+}
+
+void PostIncStmtNode::typeAnalysis(TypeAnalysis * ta) {
+	// myLoc->typeAnalysis(ta);
+	const DataType * expType = myLoc->getSymbol()->getDataType();
+	if (expType->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	if (!expType->isInt()) {
+		ta->errMathOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(INT));
+}
+void PostDecStmtNode::typeAnalysis(TypeAnalysis * ta) {
+	// myLoc->typeAnalysis(ta);
+	const DataType * expType = myLoc->getSymbol()->getDataType();
+	if (expType->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	if (!expType->isInt()) {
+		ta->errMathOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(INT));
+}
+
+
+/* Relational operations: LessNode, LessEqNode, GreaterNode, GreaterEqNode
+-> Both operands are int. The result type is bool in legal cases, ERROR otherwise.
+*/
+void LessNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+	const DataType * type1 = ta->nodeType(myExp1);
+	const DataType * type2 = ta->nodeType(myExp2);
+
+	if (type1->asError() || type2->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+
+	if (!(type1->isInt() && type2->isInt())) {
+		ta->errRelOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
+void LessEqNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+	const DataType * type1 = ta->nodeType(myExp1);
+	const DataType * type2 = ta->nodeType(myExp2);
+
+	if (type1->asError() || type2->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+
+	if (!(type1->isInt() && type2->isInt())) {
+		ta->errRelOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
+void GreaterNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+	const DataType * type1 = ta->nodeType(myExp1);
+	const DataType * type2 = ta->nodeType(myExp2);
+
+	if (type1->asError() || type2->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+
+	if (!(type1->isInt() && type2->isInt())) {
+		ta->errRelOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
+void GreaterEqNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+	const DataType * type1 = ta->nodeType(myExp1);
+	const DataType * type2 = ta->nodeType(myExp2);
+
+	if (type1->asError() || type2->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+
+	if (!(type1->isInt() && type2->isInt())) {
+		ta->errRelOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
+
+
+/* Equality operations: EqualsNode, NotEqualsNode
+-> Both operands are of the same primitive type
+Neither operands are of the same class type and Neither operand is a function type
+result type is bool
+*/
+void EqualsNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+	const DataType * type1 = ta->nodeType(myExp1);
+	const DataType * type2 = ta->nodeType(myExp2);
+
+	if (type1->asError() || type2->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	if (type1 != type2) {
+		ta->errEqOpr(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	if ((type1->isClass() || type1->isVoid() || type2->isClass() || type2->isVoid())) {
+		ta->errEqOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
+void NotEqualsNode::typeAnalysis(TypeAnalysis * ta) {
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+	const DataType * type1 = ta->nodeType(myExp1);
+	const DataType * type2 = ta->nodeType(myExp2);
+
+	if (type1->asError() || type2->asError()) {
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	if (type1 != type2) {
+		ta->errEqOpr(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	if ((type1->isClass() || type1->isVoid() || type2->isClass() || type2->isVoid())) {
+		ta->errEqOpd(pos());
+		ta->nodeType(this, ErrorType::produce());
+		return;
+	}
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
+
+
+/*Member access operations: dereferance
+The index operand is a field name of the base class type
+The result type is the type of the field in legal cases, and ERROR otherwise.
+*/
 
 }

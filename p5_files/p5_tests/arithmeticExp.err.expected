@@ -1,0 +1,9 @@
+FATAL [4,7]-[4,11]: Arithmetic operator applied to invalid operand
+FATAL [5,7]-[5,13]: Arithmetic operator applied to invalid operand
+FATAL [8,7]-[8,11]: Arithmetic operator applied to invalid operand
+FATAL [9,7]-[9,13]: Arithmetic operator applied to invalid operand
+FATAL [12,7]-[12,11]: Arithmetic operator applied to invalid operand
+FATAL [13,7]-[13,13]: Arithmetic operator applied to invalid operand
+FATAL [16,7]-[16,11]: Arithmetic operator applied to invalid operand
+FATAL [17,7]-[17,13]: Arithmetic operator applied to invalid operand
+Type Analysis Failed
