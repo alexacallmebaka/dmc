@@ -385,11 +385,11 @@ void equalityOpsTypeAnalysis(BinaryExpNode * node, TypeAnalysis * ta) {
 		ta->nodeType(node, ErrorType::produce());
 		return;
 	}
-	if (!(type1->isBool() || type1->isInt() ||  type1->isString())) {
+	if (!(type1->isBool() || type1->isInt())) {
 		ta->errEqOpd(myExp1->pos());
 		isValid = false;
 	}
-	if (!(type2->isBool() || type2->isInt() ||  type2->isString())) {
+	if (!(type2->isBool() || type2->isInt())) {
 		ta->errEqOpd(myExp2->pos());
 		isValid = false;
 	}
