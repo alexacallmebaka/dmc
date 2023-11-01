@@ -83,7 +83,7 @@ void GiveStmtNode::typeAnalysis(TypeAnalysis * ta){
   if (srcType->asFn()) {
     ta->errOutputFn(mySrc->pos());
   } else if (srcType->asClass()) {
-    ta->errOutputClass(this->pos());
+    ta->errOutputClass(mySrc->pos());
   } else if (srcType->isVoid()) {
     ta->errOutputVoid(mySrc->pos());
   }

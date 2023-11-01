@@ -25,4 +25,6 @@ main : () void {
   b--;
   c++;
   c--;
+  d: perfect int;
+  a = a + d;
 }

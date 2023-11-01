@@ -1,2 +1,3 @@
-FATAL [9,6]-[9,7]: Attempt to output a function
+FATAL [8,8]-[8,9]: Attempt to output a class
+FATAL [9,8]-[9,9]: Attempt to output a function
 Type Analysis Failed

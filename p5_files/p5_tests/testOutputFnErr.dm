@@ -1,11 +1,11 @@
 a : () int {
 
-return 5;
-
 }
-
+C : class {
+};
 main : () void {
-
-give a;
-
+  give "hello";
+  give C;
+  give a;
 }
+
