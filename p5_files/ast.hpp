@@ -322,7 +322,7 @@ public:
 	BinaryExpNode(const Position * p, ExpNode * lhs, ExpNode * rhs)
 	: ExpNode(p), myExp1(lhs), myExp2(rhs) { }
 	bool nameAnalysis(SymbolTable * symTab) override;
-	virtual void typeAnalysis(TypeAnalysis * typing) override;
+	virtual void typeAnalysis(TypeAnalysis * typing) override = 0;
 protected:
 	ExpNode * myExp1;
 	ExpNode * myExp2;
@@ -432,7 +432,7 @@ public:
 	}
 	virtual void unparse(std::ostream& out, int indent) override = 0;
 	virtual bool nameAnalysis(SymbolTable * symTab) override = 0;
-	virtual void typeAnalysis(TypeAnalysis * typing) override;
+	virtual void typeAnalysis(TypeAnalysis * typing) override = 0;
 protected:
 	ExpNode * myExp;
 };
@@ -573,7 +573,7 @@ public:
 	: StmtNode(p), myCallExp(expIn){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
-	virtual void typeAnalysis(TypeAnalysis * typing) override;
+	// void typeAnalysis(TypeAnalysis * typing) override;
 private:
 	CallExpNode * myCallExp;
 };

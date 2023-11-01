@@ -1,7 +1,9 @@
 a:int;
-
+b:int = 1;
+c:bool = true;
 main : () void {
-  a = true + 1;
+  a = 1 + true;
+  a = true + false;
   a = "EECS" + 665;
   a = 1 + 2;
 
@@ -16,4 +18,11 @@ main : () void {
   a = true / 1;
   a = "EECS" / 665;
   a = 1 / 2;
+
+  a = -true;
+
+  b++;
+  b--;
+  c++;
+  c--;
 }

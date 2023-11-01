@@ -240,77 +240,110 @@ void NotNode::typeAnalysis(TypeAnalysis * ta) {
 void PlusNode::typeAnalysis(TypeAnalysis * ta) {
 	myExp1->typeAnalysis(ta);
 	myExp2->typeAnalysis(ta);
+	bool isValid = true;
 	const DataType * type1 = ta->nodeType(myExp1);
 	const DataType * type2 = ta->nodeType(myExp2);
 
 	if (type1->asError() || type2->asError()) {
 		ta->nodeType(this, ErrorType::produce());
+		isValid = false;
 		return;
 	}
 
-	if (!(type1->isInt() && type2->isInt())) {
-		ta->errMathOpd(pos());
-		ta->nodeType(this, ErrorType::produce());
-		return;
+	if (!(type1->isInt())) {
+		ta->errMathOpd(myExp1->pos());
+		isValid = false;
 	}
-	ta->nodeType(this, BasicType::produce(INT));
+	if (!(type2->isInt())) {
+		ta->errMathOpd(myExp2->pos());
+		isValid = false;
+	}
+	if (isValid) {
+		ta->nodeType(this, BasicType::produce(INT));
+	} else {
+		ta->nodeType(this, ErrorType::produce());
+	}
 }
 
 void MinusNode::typeAnalysis(TypeAnalysis * ta) {
 	myExp1->typeAnalysis(ta);
 	myExp2->typeAnalysis(ta);
+	bool isValid = true;
 	const DataType * type1 = ta->nodeType(myExp1);
 	const DataType * type2 = ta->nodeType(myExp2);
 
 	if (type1->asError() || type2->asError()) {
 		ta->nodeType(this, ErrorType::produce());
+		isValid = false;
 		return;
 	}
-
-	if (!(type1->isInt() && type2->isInt())) {
-		ta->errMathOpd(pos());
+	if (!(type1->isInt())) {
+		ta->errMathOpd(myExp1->pos());
+		isValid = false;
+	}
+	if (!(type2->isInt())) {
+		ta->errMathOpd(myExp2->pos());
+		isValid = false;
+	}
+	if (isValid) {
+		ta->nodeType(this, BasicType::produce(INT));
+	} else {
 		ta->nodeType(this, ErrorType::produce());
-		return;
 	}
-	ta->nodeType(this, BasicType::produce(INT));
 }
 
 void TimesNode::typeAnalysis(TypeAnalysis * ta) {
 	myExp1->typeAnalysis(ta);
 	myExp2->typeAnalysis(ta);
+	bool isValid = true;
 	const DataType * type1 = ta->nodeType(myExp1);
 	const DataType * type2 = ta->nodeType(myExp2);
 
 	if (type1->asError() || type2->asError()) {
 		ta->nodeType(this, ErrorType::produce());
+		isValid = false;
 		return;
 	}
-
-	if (!(type1->isInt() && type2->isInt())) {
-		ta->errMathOpd(pos());
+	if (!(type1->isInt())) {
+		ta->errMathOpd(myExp1->pos());
+		isValid = false;
+	}
+	if (!(type2->isInt())) {
+		ta->errMathOpd(myExp2->pos());
+		isValid = false;
+	}
+	if (isValid) {
+		ta->nodeType(this, BasicType::produce(INT));
+	} else {
 		ta->nodeType(this, ErrorType::produce());
-		return;
 	}
-	ta->nodeType(this, BasicType::produce(INT));
 }
 
 void DivideNode::typeAnalysis(TypeAnalysis * ta) {
 	myExp1->typeAnalysis(ta);
 	myExp2->typeAnalysis(ta);
+	bool isValid = true;
 	const DataType * type1 = ta->nodeType(myExp1);
 	const DataType * type2 = ta->nodeType(myExp2);
 
 	if (type1->asError() || type2->asError()) {
 		ta->nodeType(this, ErrorType::produce());
+		isValid = false;
 		return;
 	}
-
-	if (!(type1->isInt() && type2->isInt())) {
-		ta->errMathOpd(pos());
+	if (!(type1->isInt())) {
+		ta->errMathOpd(myExp1->pos());
+		isValid = false;
+	}
+	if (!(type2->isInt())) {
+		ta->errMathOpd(myExp2->pos());
+		isValid = false;
+	}
+	if (isValid) {
+		ta->nodeType(this, BasicType::produce(INT));
+	} else {
 		ta->nodeType(this, ErrorType::produce());
-		return;
 	}
-	ta->nodeType(this, BasicType::produce(INT));
 }
 
 void NegNode::typeAnalysis(TypeAnalysis * ta) {
@@ -322,7 +355,7 @@ void NegNode::typeAnalysis(TypeAnalysis * ta) {
 		return;
 	}
 	if (!(expType->isInt())) {
-		ta->errMathOpd(pos());
+		ta->errMathOpd(myExp->pos());
 		ta->nodeType(this, ErrorType::produce());
 		return;
 	}
@@ -330,32 +363,28 @@ void NegNode::typeAnalysis(TypeAnalysis * ta) {
 }
 
 void PostIncStmtNode::typeAnalysis(TypeAnalysis * ta) {
-	// myLoc->typeAnalysis(ta);
 	const DataType * expType = myLoc->getSymbol()->getDataType();
 	if (expType->asError()) {
 		ta->nodeType(this, ErrorType::produce());
 		return;
 	}
 	if (!expType->isInt()) {
-		ta->errMathOpd(pos());
+		ta->errMathOpd(myLoc->pos());
 		ta->nodeType(this, ErrorType::produce());
 		return;
 	}
-	ta->nodeType(this, BasicType::produce(INT));
 }
 void PostDecStmtNode::typeAnalysis(TypeAnalysis * ta) {
-	// myLoc->typeAnalysis(ta);
 	const DataType * expType = myLoc->getSymbol()->getDataType();
 	if (expType->asError()) {
 		ta->nodeType(this, ErrorType::produce());
 		return;
 	}
 	if (!expType->isInt()) {
-		ta->errMathOpd(pos());
+		ta->errMathOpd(myLoc->pos());
 		ta->nodeType(this, ErrorType::produce());
 		return;
 	}
-	ta->nodeType(this, BasicType::produce(INT));
 }
 
 
