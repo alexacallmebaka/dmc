@@ -4,8 +4,8 @@ a : () int {
 C : class {
 };
 main : () void {
-  give "hello";
-  give C;
-  give a;
+  b : int;
+  take C;
+  take a;
+  take b;
 }
-
