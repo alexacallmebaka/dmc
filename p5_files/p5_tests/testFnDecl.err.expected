@@ -1,0 +1,5 @@
+FATAL [17,9]-[17,13]: Bad return value
+FATAL [21,9]-[21,10]: Bad return value
+FATAL [25,2]-[25,8]: Missing return value
+FATAL [29,9]-[29,10]: Return with a value in void function
+Type Analysis Failed

@@ -52,12 +52,11 @@ void FnDeclNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	//Note: this function may need extra code
 
 	//we can use this code for FnDecl?
-	// IDNode * myId = this->ID();
-	// SemSymbol * nameSymbol = myID->getSymbol();
-	// const DataType * nameType = nameSymbol->getDataType();
-	// const FnType * symAsFn = nameType->asFn();
+	const SemSymbol * nameSymbol = myID->getSymbol();
+	const DataType * nameType = nameSymbol->getDataType();
+	const FnType * symAsFn = nameType->asFn();
 
-	// ta->setCurrentFnType(symAsFn);
+	ta->setCurrentFnType(symAsFn);
 
 	for (auto stmt : *myBody){
 		stmt->typeAnalysis(ta);
@@ -67,6 +66,52 @@ void FnDeclNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 
 void ReturnStmtNode::typeAnalysis(TypeAnalysis * ta) {//{{{1
                                                       
+  const DataType * expType;
+
+  if ( myExp ) {
+
+    myExp->typeAnalysis(ta);                                                      
+    expType = ta->nodeType(myExp);
+
+  } else { //if nullptr, that means an empty return so we set type of expr to void.
+    
+     expType = BasicType::produce(VOID);
+
+  }
+  
+	if (expType->asError()){
+
+		ta->nodeType(this, ErrorType::produce());
+
+	}
+  
+  const DataType * currentFnRetType = ta->getCurrentFnType()->getReturnType();
+  
+  //nothing to do if types match.
+  if ( expType ==  currentFnRetType ) { 
+
+    return;
+
+  //if expr is void AND types don't match, it means we are trying to return void from a non-void function.
+  } else if ( expType->isVoid() ) {
+
+      //since myExpr is void, return position of return statement.
+      //this is consistent with the oracle.
+      ta->errRetEmpty(this->pos());
+
+  //if current fn type is void, but types dont match we must be trying to return a value from a void function.
+  } else if ( currentFnRetType->isVoid() ) {
+      
+      ta->extraRetValue(myExp->pos());
+
+  //in all other cases, the return types simply don't match.
+  } else {
+
+    ta->errRetWrong(myExp->pos());
+
+  }
+
+
 }//1}}}
 
 void StmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
