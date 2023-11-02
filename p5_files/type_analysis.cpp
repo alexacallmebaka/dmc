@@ -7,7 +7,7 @@
 
 namespace drewno_mars{
 
-TypeAnalysis * TypeAnalysis::build(NameAnalysis * nameAnalysis){
+TypeAnalysis * TypeAnalysis::build(NameAnalysis * nameAnalysis){ //{{{1
 	//To emphasize that type analysis depends on name analysis
 	// being complete, a name analysis must be supplied for 
 	// type analysis to be performed.
@@ -21,9 +21,9 @@ TypeAnalysis * TypeAnalysis::build(NameAnalysis * nameAnalysis){
 	}
 
 	return typeAnalysis;
-}
+} //1}}}
 
-void ProgramNode::typeAnalysis(TypeAnalysis * ta){
+void ProgramNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 
 	//pass the TypeAnalysis down throughout
 	// the entire tree, getting the types for
@@ -38,9 +38,9 @@ void ProgramNode::typeAnalysis(TypeAnalysis * ta){
 	//(Alternatively, we could make our type 
 	// be error if the DeclListNode is an error)
 	ta->nodeType(this, BasicType::produce(VOID));
-}
+} //1}}}
 
-void FnDeclNode::typeAnalysis(TypeAnalysis * ta){
+void FnDeclNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 
 	//HINT: you might want to change the signature for
 	// typeAnalysis on FnBodyNode to take a second
@@ -50,6 +50,7 @@ void FnDeclNode::typeAnalysis(TypeAnalysis * ta){
 	// the current function
 
 	//Note: this function may need extra code
+
 	//we can use this code for FnDecl?
 	// IDNode * myId = this->ID();
 	// SemSymbol * nameSymbol = myID->getSymbol();
@@ -62,15 +63,18 @@ void FnDeclNode::typeAnalysis(TypeAnalysis * ta){
 		stmt->typeAnalysis(ta);
 	}
 	//we need to add the body type to know which type this fucntion return
-}
+} //1}}}
 
-void StmtNode::typeAnalysis(TypeAnalysis * ta){
+void ReturnStmtNode::typeAnalysis(TypeAnalysis * ta) {//{{{1
+                                                      
+}//1}}}
+
+void StmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	TODO("Implement me in the subclass");
-}
+} //1}}}
 
-
-void GiveStmtNode::typeAnalysis(TypeAnalysis * ta){
-  mySrc->typeAnalysis(ta);
+void GiveStmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
+  mySrc->typeAnalysis(ta);  
   const DataType * srcType = ta->nodeType(mySrc);
 	if (srcType->asError()){
 		ta->nodeType(this, ErrorType::produce());
@@ -87,10 +91,10 @@ void GiveStmtNode::typeAnalysis(TypeAnalysis * ta){
   } else if (srcType->isVoid()) {
     ta->errOutputVoid(mySrc->pos());
   }
-}
+} //1}}}
 
 // take operations
-void TakeStmtNode::typeAnalysis(TypeAnalysis * ta) {
+void TakeStmtNode::typeAnalysis(TypeAnalysis * ta) { //{{{1
 	myDst->typeAnalysis(ta);
 
 	const DataType * dstType = ta->nodeType(myDst);
@@ -107,10 +111,9 @@ void TakeStmtNode::typeAnalysis(TypeAnalysis * ta) {
   } else if (dstType->asClass()) {
     ta->errReadClass(myDst->pos());
   }
-}
+} //1}}}
 
-/*Assignment access: AssignStmtNode*/
-void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){
+void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	//TODO: Note that this function is incomplete. 
 	// and needs additional code
 	bool isValid = true;
@@ -143,59 +146,59 @@ void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){
 		ta->errAssignOpr(this->pos());
 	}
 	ta->nodeType(this, BasicType::produce(VOID));
-}
+} //1}}}
 
-void ExpNode::typeAnalysis(TypeAnalysis * ta){
+void ExpNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	TODO("Override me in the subclass");
-}
+} //1}}}
 
-void DeclNode::typeAnalysis(TypeAnalysis * ta){
+void DeclNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	TODO("Override me in the subclass");
-}
+} //1}}}
 
-void VarDeclNode::typeAnalysis(TypeAnalysis * ta){
+void VarDeclNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	// VarDecls always pass type analysis, since they 
 	// are never used in an expression. You may choose
 	// to type them void (like this), as discussed in class
 	ta->nodeType(this, BasicType::produce(VOID));
-}
+} //1}}}
 
-void ClassDefnNode::typeAnalysis(TypeAnalysis * ta){
+void ClassDefnNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	for (auto stmt : *myMembers){
 		stmt->typeAnalysis(ta);
 	}
 	ta->nodeType(this, BasicType::produce(CLASS));
-}
+} //1}}}
 
-
-void IDNode::typeAnalysis(TypeAnalysis * ta){
+void IDNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	// IDs never fail type analysis and always
 	// yield the type of their symbol (which
 	// depends on their definition)
 	ta->nodeType(this, this->getSymbol()->getDataType());
-}
+} //1}}}
 
-void IntLitNode::typeAnalysis(TypeAnalysis * ta){
+void IntLitNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	// IntLits never fail their type analysis and always
 	// yield the type INT
 	ta->nodeType(this, BasicType::produce(INT));
-}
+} //1}}}
 
-void TrueNode::typeAnalysis(TypeAnalysis * ta){
+void TrueNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	ta->nodeType(this, BasicType::produce(BOOL));
-}
+} //1}}}
 
-void FalseNode::typeAnalysis(TypeAnalysis * ta){
+void FalseNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	ta->nodeType(this, BasicType::produce(BOOL));
-}
+} //1}}}
 
-void StrLitNode::typeAnalysis(TypeAnalysis * ta){
+void StrLitNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	ta->nodeType(this, BasicType::produce(STRING));
-}
+} //1}}}
 
 /*Logical operators and conditions: Binary - AndNode, OrNode, Unary - NotNode
 -> All operands are bool. The result type is bool in legal cases, ERROR otherwise.
-*/
+{{{1*/
+
 void logicalOpsTypeAnalysis(BinaryExpNode * node, TypeAnalysis * ta) {
 	ExpNode * myExp1 = node->getExp1();
 	ExpNode * myExp2 = node->getExp2();
@@ -246,11 +249,11 @@ void NotNode::typeAnalysis(TypeAnalysis * ta) {
 		return;
 	}
 	ta->nodeType(this, BasicType::produce(BOOL));
-}
+} //1}}}
 
 /* Arithmetic operations: Binary - PlusNode, MinusNode, TimesNode, DivideNode, Unary - NegNode, postincrement, postdecrement
 -> Operands are both int - the result type is int. In all illegal cases, the result type is ERROR.
-*/
+{{{1*/
 void arithmeticOpsTypeAnalysis(BinaryExpNode * node, TypeAnalysis * ta) {
 	ExpNode * myExp1 = node->getExp1();
 	ExpNode * myExp2 = node->getExp2();
@@ -427,7 +430,7 @@ void EqualsNode::typeAnalysis(TypeAnalysis * ta) {
 }
 void NotEqualsNode::typeAnalysis(TypeAnalysis * ta) {
 	equalityOpsTypeAnalysis(this, ta);
-}
+} //1}}}
 
 
 /*Member access operations: dereferance

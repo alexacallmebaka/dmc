@@ -290,6 +290,7 @@ public:
 	: StmtNode(p), myExp(exp){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	virtual void typeAnalysis(TypeAnalysis *) override;
 private:
 	ExpNode * myExp;
 };
