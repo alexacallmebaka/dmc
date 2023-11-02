@@ -42,16 +42,7 @@ void ProgramNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 
 void FnDeclNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 
-	//HINT: you might want to change the signature for
-	// typeAnalysis on FnBodyNode to take a second
-	// argument which is the type of the current 
-	// function. This will help you to know at a 
-	// return statement whether the return type matches
-	// the current function
-
-	//Note: this function may need extra code
-
-	//we can use this code for FnDecl?
+	//get current function type.
 	const SemSymbol * nameSymbol = myID->getSymbol();
 	const DataType * nameType = nameSymbol->getDataType();
 	const FnType * symAsFn = nameType->asFn();
