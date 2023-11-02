@@ -56,53 +56,32 @@ void FnDeclNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 } //1}}}
 
 void ReturnStmtNode::typeAnalysis(TypeAnalysis * ta) {//{{{1
-                                                      
   const DataType * expType;
-
   if ( myExp ) {
-
     myExp->typeAnalysis(ta);                                                      
     expType = ta->nodeType(myExp);
-
   } else { //if nullptr, that means an empty return so we set type of expr to void.
-    
-     expType = BasicType::produce(VOID);
-
+		expType = BasicType::produce(VOID);
   }
-  
 	if (expType->asError()){
-
 		ta->nodeType(this, ErrorType::produce());
-
 	}
-  
   const DataType * currentFnRetType = ta->getCurrentFnType()->getReturnType();
-  
-  //nothing to do if types match.
+  	//nothing to do if types match.
   if ( expType ==  currentFnRetType ) { 
-
     return;
-
-  //if expr is void AND types don't match, it means we are trying to return void from a non-void function.
+  	//if expr is void AND types don't match, it means we are trying to return void from a non-void function.
   } else if ( expType->isVoid() ) {
-
-      //since myExpr is void, return position of return statement.
-      //this is consistent with the oracle.
-      ta->errRetEmpty(this->pos());
-
+		//since myExpr is void, return position of return statement.
+		//this is consistent with the oracle.
+		ta->errRetEmpty(this->pos());
   //if current fn type is void, but types dont match we must be trying to return a value from a void function.
   } else if ( currentFnRetType->isVoid() ) {
-      
-      ta->extraRetValue(myExp->pos());
-
+		ta->extraRetValue(myExp->pos());
   //in all other cases, the return types simply don't match.
   } else {
-
-    ta->errRetWrong(myExp->pos());
-
+		ta->errRetWrong(myExp->pos());
   }
-
-
 }//1}}}
 
 void StmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
@@ -150,8 +129,6 @@ void TakeStmtNode::typeAnalysis(TypeAnalysis * ta) { //{{{1
 } //1}}}
 
 void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
-	//TODO: Note that this function is incomplete. 
-	// and needs additional code
 	bool isValid = true;
 	//Do typeAnalysis on the subexpressions
 	myDst->typeAnalysis(ta);
@@ -171,15 +148,15 @@ void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	}
 
 	if (tgtType->getString() != srcType->getString()) {
+		ta->errAssignOpr(this->pos());
 		isValid = false;
 	}
 	if (tgtType->isVoid()) {
+		ta->errAssignOpd(this->pos());
 		isValid = false;
 	}
 	if (isValid) {
 		ta->nodeType(this, tgtType);
-	} else {
-		ta->errAssignOpr(this->pos());
 	}
 	ta->nodeType(this, BasicType::produce(VOID));
 } //1}}}
