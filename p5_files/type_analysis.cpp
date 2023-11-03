@@ -119,15 +119,15 @@ void CallExpNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
   
   if ( !( symAsFn ) ) {
 
-    ta->errCallee(myCall->pos());   
+    ta->errCallee(myCallee->pos());   
     return;
 
   }
 
-  TypeList * formalsList = symAsFn->getFormalTypes();
+  const TypeList * formalsList = symAsFn->getFormalTypes();
 
   if( myArgs->size() != formalsList->count() ) {
-    ta->errAgCount(myCall->pos());
+    ta->errArgCount(myCallee->pos());
   }
 
 //work in progress
