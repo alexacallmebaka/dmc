@@ -451,4 +451,35 @@ The index operand is a field name of the base class type
 The result type is the type of the field in legal cases, and ERROR otherwise.
 */
 
+//Bool condition
+void IfStmtNode::typeAnalysis(TypeAnalysis * ta) {
+	myCond->typeAnalysis(ta);
+	if (!ta->nodeType(myCond)->isBool()) {
+		ta->errCond(myCond->pos());
+	}
+	for (StmtNode * node : *myBody) {
+		node->typeAnalysis(ta);
+	}
+}
+void IfElseStmtNode::typeAnalysis(TypeAnalysis * ta) {
+	myCond->typeAnalysis(ta);
+	if (!ta->nodeType(myCond)->isBool()) {
+		ta->errCond(myCond->pos());
+	}
+	for (StmtNode * node : *myBodyTrue) {
+		node->typeAnalysis(ta);
+	}
+		for (StmtNode * node : *myBodyFalse) {
+		node->typeAnalysis(ta);
+	}
+}
+void WhileStmtNode::typeAnalysis(TypeAnalysis * ta) {
+	myCond->typeAnalysis(ta);
+	if (!ta->nodeType(myCond)->isBool()) {
+		ta->errCond(myCond->pos());
+	}
+	for (StmtNode * node : *myBody) {
+		node->typeAnalysis(ta);
+	}
+}
 }
