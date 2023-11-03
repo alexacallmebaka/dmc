@@ -105,6 +105,60 @@ void ReturnStmtNode::typeAnalysis(TypeAnalysis * ta) {//{{{1
 
 }//1}}}
 
+void CallExpNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
+  
+  //todo:
+  //check formals against actuals
+  //check type this exp as fn ret type
+  
+ //if lists are not same size, err out
+ 
+  SemSymbol * nameSymbol = myCallee->getSymbol();
+  const DataType * nameType = nameSymbol->getDataType();
+  const FnType * symAsFn = nameType->asFn();
+  
+  if ( !( symAsFn ) ) {
+
+    ta->errCallee(myCall->pos());   
+    return;
+
+  }
+
+  TypeList * formalsList = symAsFn->getFormalTypes();
+
+  if( myArgs->size() != formalsList->count() ) {
+    ta->errAgCount(myCall->pos());
+  }
+
+//work in progress
+// auto formalsItr = formalsList->start();
+//
+// for ( auto arg : myArgs ) {
+//     
+//   arg->typeAnalysis(ta);
+//  
+//   const DataType * argType = ta->nodeType(arg);
+//
+//   //if one of the args errors out, the whole thing is an error.
+//   if (argType->asError()) {
+//     
+//     ta->nodeType(this, ErrorType::produce());
+//     continue;
+//	}
+//
+//  if ( argType != *formalsItr ) {
+//  
+//     ta->nodeType(this, ErrorType::produce());
+//     ta->errArgMatch(arg->pos);
+//
+//  }
+//
+//  formalsItr++;
+//
+// }  
+
+} //1}}}
+
 void StmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	TODO("Implement me in the subclass");
 } //1}}}
