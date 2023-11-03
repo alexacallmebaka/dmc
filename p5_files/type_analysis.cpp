@@ -129,7 +129,7 @@ void CallExpNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 //  
 //     ta->nodeType(this, ErrorType::produce());
 //     ta->errArgMatch(arg->pos);
-//
+//MagicNode
 //  }
 //
 //  formalsItr++;
@@ -155,7 +155,7 @@ void GiveStmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
  //cant test these until we implement more stuff... but i think this works 
   if (srcType->asFn()) {
     ta->errOutputFn(mySrc->pos());
-  } else if (srcType->asClass()) {
+  } else if (srcType->isClass()) {
     ta->errOutputClass(mySrc->pos());
   } else if (srcType->isVoid()) {
     ta->errOutputVoid(mySrc->pos());
@@ -191,22 +191,26 @@ void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	const DataType * tgtType = ta->nodeType(myDst);
 	const DataType * srcType = ta->nodeType(mySrc);
 
-
 	// As error returns null if subType is NOT an error type
 	// otherwise, it returns the subType itself. It 
 	// sort of serves as a way to cast the subtype
-	if (tgtType->asError() || srcType->asError()){
+	if (srcType->asError() || srcType->asError()) {
 		isValid = false;
 		ta->nodeType(this, ErrorType::produce());
 		return;
 	}
-
-	if (tgtType->getString() != srcType->getString()) {
+	if (srcType->asFn() || srcType->isClass()) {
+		ta->errAssignOpd(mySrc->pos());
+		isValid = false;
+	}
+	if (isValid && (tgtType->getString() != srcType->getString())) {
 		ta->errAssignOpr(this->pos());
 		isValid = false;
 	}
-	if (tgtType->isVoid()) {
-		ta->errAssignOpd(this->pos());
+
+	cout << tgtType->isPerfect() << endl;
+	if (tgtType->isPerfect()) {
+		ta->errAssignNonLVal(myDst->pos());
 		isValid = false;
 	}
 	if (isValid) {
@@ -437,7 +441,6 @@ void relationalOpsTypeAnalysis(BinaryExpNode * node, TypeAnalysis * ta) {
 	if (isValid) {
 		ta->nodeType(node, BasicType::produce(BOOL));
 	} else {
-
 		ta->nodeType(node, ErrorType::produce());
 	}
 }
