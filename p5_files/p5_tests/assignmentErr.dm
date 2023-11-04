@@ -9,8 +9,9 @@ C : class {
 main : () int {
   a : perfect int = 5;
   take f;
-  take a;
+	a = 10;
 	b : int;
 	b = f;
 	b = C;
+	take a;
 }

@@ -89,7 +89,6 @@ void CallExpNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
   //todo:
   //check formals against actuals
   //check type this exp as fn ret type
-  
  //if lists are not same size, err out
  
   SemSymbol * nameSymbol = myCallee->getSymbol();
@@ -97,10 +96,8 @@ void CallExpNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
   const FnType * symAsFn = nameType->asFn();
   
   if ( !( symAsFn ) ) {
-
     ta->errCallee(myCallee->pos());   
     return;
-
   }
 
   const TypeList * formalsList = symAsFn->getFormalTypes();
@@ -172,6 +169,10 @@ void TakeStmtNode::typeAnalysis(TypeAnalysis * ta) { //{{{1
 		ta->nodeType(this, ErrorType::produce());
 		return;
 	}
+	if (dstType->isPerfect()) {
+		ta->errAssignNonLVal(myDst->pos());
+		return;
+	}
 	if ((dstType->isBool() || dstType->isInt())) {
 		return;
 	}
@@ -203,14 +204,12 @@ void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 		ta->errAssignOpd(mySrc->pos());
 		isValid = false;
 	}
-	if (isValid && (tgtType->getString() != srcType->getString())) {
-		ta->errAssignOpr(this->pos());
+	if (tgtType->isPerfect()) {
+		ta->errAssignNonLVal(mySrc->pos());
 		isValid = false;
 	}
-
-	cout << tgtType->isPerfect() << endl;
-	if (tgtType->isPerfect()) {
-		ta->errAssignNonLVal(myDst->pos());
+	if (isValid && (tgtType->getString() != srcType->getString())) {
+		ta->errAssignOpr(this->pos());
 		isValid = false;
 	}
 	if (isValid) {

@@ -319,7 +319,6 @@ public:
 	: LocNode(p), myBase(inBase), myField(inField) { }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
-	void typeAnalysis(TypeAnalysis * typing) override;
 private:
 	LocNode * myBase;
 	IDNode * myField;
