@@ -49,6 +49,10 @@ void FnDeclNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 
 	ta->setCurrentFnType(symAsFn);
 
+	for (auto stmt : *myFormals){
+		stmt->typeAnalysis(ta);
+	}
+
 	for (auto stmt : *myBody){
 		stmt->typeAnalysis(ta);
 	}
@@ -86,6 +90,7 @@ void ReturnStmtNode::typeAnalysis(TypeAnalysis * ta) {//{{{1
 
 void CallStmtNode::typeAnalysis(TypeAnalysis * ta) {
 	myCallExp->typeAnalysis(ta);
+	// ta->nodeType(this, ta->nodeType(myCallExp));
 }
 
 void CallExpNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
@@ -123,6 +128,7 @@ void CallExpNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 		}
 		formalsItr++;
 	}
+	ta->nodeType(this, symAsFn->getReturnType()->asBasic());
 } //1}}}
 
 void StmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1

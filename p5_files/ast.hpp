@@ -264,7 +264,7 @@ public:
 	  std::list<StmtNode *> * bodyTrueIn,
 	  std::list<StmtNode *> * bodyFalseIn)
 	: StmtNode(p), myCond(condIn),
-	  myBodyTrue(bodyTrueIn), myBodyFalse(bodyFalseIn) { }
+	myBodyTrue(bodyTrueIn), myBodyFalse(bodyFalseIn) { }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
 	void typeAnalysis(TypeAnalysis *) override;
