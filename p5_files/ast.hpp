@@ -582,7 +582,7 @@ public:
 	: StmtNode(p), myCallExp(expIn){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
-	// void typeAnalysis(TypeAnalysis * typing) override;
+	void typeAnalysis(TypeAnalysis * typing) override;
 private:
 	CallExpNode * myCallExp;
 };

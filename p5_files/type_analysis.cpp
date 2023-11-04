@@ -84,13 +84,15 @@ void ReturnStmtNode::typeAnalysis(TypeAnalysis * ta) {//{{{1
   }
 }//1}}}
 
+void CallStmtNode::typeAnalysis(TypeAnalysis * ta) {
+	myCallExp->typeAnalysis(ta);
+}
+
 void CallExpNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
-  
   //todo:
   //check formals against actuals
   //check type this exp as fn ret type
  //if lists are not same size, err out
- 
   SemSymbol * nameSymbol = myCallee->getSymbol();
   const DataType * nameType = nameSymbol->getDataType();
   const FnType * symAsFn = nameType->asFn();
@@ -100,39 +102,27 @@ void CallExpNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
     return;
   }
 
-  const TypeList * formalsList = symAsFn->getFormalTypes();
+  const std::list<const DataType *> * formalsList = symAsFn->getFormalTypes()->getTypes();
 
-  if( myArgs->size() != formalsList->count() ) {
-    ta->errArgCount(myCallee->pos());
+  if( myArgs->size() != formalsList->size() ) {
+    ta->errArgCount(this->pos());
+		return;
   }
-
-//work in progress
-// auto formalsItr = formalsList->start();
-//
-// for ( auto arg : myArgs ) {
-//     
-//   arg->typeAnalysis(ta);
-//  
-//   const DataType * argType = ta->nodeType(arg);
-//
-//   //if one of the args errors out, the whole thing is an error.
-//   if (argType->asError()) {
-//     
-//     ta->nodeType(this, ErrorType::produce());
-//     continue;
-//	}
-//
-//  if ( argType != *formalsItr ) {
-//  
-//     ta->nodeType(this, ErrorType::produce());
-//     ta->errArgMatch(arg->pos);
-//MagicNode
-//  }
-//
-//  formalsItr++;
-//
-// }  
-
+	auto formalsItr = formalsList->begin();
+	for ( auto arg : *myArgs ) {
+		arg->typeAnalysis(ta);
+		const DataType * argType = ta->nodeType(arg);
+		//if one of the args errors out, the whole thing is an error.
+		if (argType->asError()) {
+			ta->nodeType(this, ErrorType::produce());
+			continue;
+		}
+		if ( argType != *formalsItr ) {
+			ta->nodeType(this, ErrorType::produce());
+			ta->errArgMatch(arg->pos());
+		}
+		formalsItr++;
+	}
 } //1}}}
 
 void StmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
