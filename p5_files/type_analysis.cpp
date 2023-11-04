@@ -56,107 +56,73 @@ void FnDeclNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 } //1}}}
 
 void ReturnStmtNode::typeAnalysis(TypeAnalysis * ta) {//{{{1
-                                                      
   const DataType * expType;
-
   if ( myExp ) {
-
     myExp->typeAnalysis(ta);                                                      
     expType = ta->nodeType(myExp);
-
   } else { //if nullptr, that means an empty return so we set type of expr to void.
-    
-     expType = BasicType::produce(VOID);
-
+		expType = BasicType::produce(VOID);
   }
-  
 	if (expType->asError()){
-
 		ta->nodeType(this, ErrorType::produce());
-
 	}
-  
   const DataType * currentFnRetType = ta->getCurrentFnType()->getReturnType();
-  
-  //nothing to do if types match.
+  	//nothing to do if types match.
   if ( expType ==  currentFnRetType ) { 
-
     return;
-
-  //if expr is void AND types don't match, it means we are trying to return void from a non-void function.
+  	//if expr is void AND types don't match, it means we are trying to return void from a non-void function.
   } else if ( expType->isVoid() ) {
-
-      //since myExpr is void, return position of return statement.
-      //this is consistent with the oracle.
-      ta->errRetEmpty(this->pos());
-
+		//since myExpr is void, return position of return statement.
+		//this is consistent with the oracle.
+		ta->errRetEmpty(this->pos());
   //if current fn type is void, but types dont match we must be trying to return a value from a void function.
   } else if ( currentFnRetType->isVoid() ) {
-      
-      ta->extraRetValue(myExp->pos());
-
+		ta->extraRetValue(myExp->pos());
   //in all other cases, the return types simply don't match.
   } else {
-
-    ta->errRetWrong(myExp->pos());
-
+		ta->errRetWrong(myExp->pos());
   }
-
-
 }//1}}}
 
+void CallStmtNode::typeAnalysis(TypeAnalysis * ta) {
+	myCallExp->typeAnalysis(ta);
+}
+
 void CallExpNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
-  
   //todo:
   //check formals against actuals
   //check type this exp as fn ret type
-  
  //if lists are not same size, err out
- 
   SemSymbol * nameSymbol = myCallee->getSymbol();
   const DataType * nameType = nameSymbol->getDataType();
   const FnType * symAsFn = nameType->asFn();
   
   if ( !( symAsFn ) ) {
-
     ta->errCallee(myCallee->pos());   
     return;
-
   }
 
-  const TypeList * formalsList = symAsFn->getFormalTypes();
+  const std::list<const DataType *> * formalsList = symAsFn->getFormalTypes()->getTypes();
 
-  if( myArgs->size() != formalsList->count() ) {
-    ta->errArgCount(myCallee->pos());
+  if( myArgs->size() != formalsList->size() ) {
+    ta->errArgCount(this->pos());
+		return;
   }
-
-//work in progress
-// auto formalsItr = formalsList->start();
-//
-// for ( auto arg : myArgs ) {
-//     
-//   arg->typeAnalysis(ta);
-//  
-//   const DataType * argType = ta->nodeType(arg);
-//
-//   //if one of the args errors out, the whole thing is an error.
-//   if (argType->asError()) {
-//     
-//     ta->nodeType(this, ErrorType::produce());
-//     continue;
-//	}
-//
-//  if ( argType != *formalsItr ) {
-//  
-//     ta->nodeType(this, ErrorType::produce());
-//     ta->errArgMatch(arg->pos);
-//
-//  }
-//
-//  formalsItr++;
-//
-// }  
-
+	auto formalsItr = formalsList->begin();
+	for ( auto arg : *myArgs ) {
+		arg->typeAnalysis(ta);
+		const DataType * argType = ta->nodeType(arg);
+		//if one of the args errors out, the whole thing is an error.
+		if (argType->asError()) {
+			ta->nodeType(this, ErrorType::produce());
+			continue;
+		}
+		if ( argType != *formalsItr ) {
+			ta->nodeType(this, ErrorType::produce());
+			ta->errArgMatch(arg->pos());
+		}
+		formalsItr++;
+	}
 } //1}}}
 
 void StmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
@@ -176,7 +142,7 @@ void GiveStmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
  //cant test these until we implement more stuff... but i think this works 
   if (srcType->asFn()) {
     ta->errOutputFn(mySrc->pos());
-  } else if (srcType->asClass()) {
+  } else if (srcType->isClass()) {
     ta->errOutputClass(mySrc->pos());
   } else if (srcType->isVoid()) {
     ta->errOutputVoid(mySrc->pos());
@@ -193,6 +159,10 @@ void TakeStmtNode::typeAnalysis(TypeAnalysis * ta) { //{{{1
 		ta->nodeType(this, ErrorType::produce());
 		return;
 	}
+	if (dstType->isPerfect()) {
+		ta->errAssignNonLVal(myDst->pos());
+		return;
+	}
 	if ((dstType->isBool() || dstType->isInt())) {
 		return;
 	}
@@ -204,8 +174,6 @@ void TakeStmtNode::typeAnalysis(TypeAnalysis * ta) { //{{{1
 } //1}}}
 
 void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
-	//TODO: Note that this function is incomplete. 
-	// and needs additional code
 	bool isValid = true;
 	//Do typeAnalysis on the subexpressions
 	myDst->typeAnalysis(ta);
@@ -214,26 +182,28 @@ void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){ //{{{1
 	const DataType * tgtType = ta->nodeType(myDst);
 	const DataType * srcType = ta->nodeType(mySrc);
 
-
 	// As error returns null if subType is NOT an error type
 	// otherwise, it returns the subType itself. It 
 	// sort of serves as a way to cast the subtype
-	if (tgtType->asError() || srcType->asError()){
+	if (srcType->asError() || srcType->asError()) {
 		isValid = false;
 		ta->nodeType(this, ErrorType::produce());
 		return;
 	}
-
-	if (tgtType->getString() != srcType->getString()) {
+	if (srcType->asFn() || srcType->isClass()) {
+		ta->errAssignOpd(mySrc->pos());
 		isValid = false;
 	}
-	if (tgtType->isVoid()) {
+	if (tgtType->isPerfect()) {
+		ta->errAssignNonLVal(mySrc->pos());
+		isValid = false;
+	}
+	if (isValid && (tgtType->getString() != srcType->getString())) {
+		ta->errAssignOpr(this->pos());
 		isValid = false;
 	}
 	if (isValid) {
 		ta->nodeType(this, tgtType);
-	} else {
-		ta->errAssignOpr(this->pos());
 	}
 	ta->nodeType(this, BasicType::produce(VOID));
 } //1}}}
@@ -460,7 +430,6 @@ void relationalOpsTypeAnalysis(BinaryExpNode * node, TypeAnalysis * ta) {
 	if (isValid) {
 		ta->nodeType(node, BasicType::produce(BOOL));
 	} else {
-
 		ta->nodeType(node, ErrorType::produce());
 	}
 }
@@ -528,4 +497,35 @@ The index operand is a field name of the base class type
 The result type is the type of the field in legal cases, and ERROR otherwise.
 */
 
+//Bool condition
+void IfStmtNode::typeAnalysis(TypeAnalysis * ta) {
+	myCond->typeAnalysis(ta);
+	if (!ta->nodeType(myCond)->isBool()) {
+		ta->errCond(myCond->pos());
+	}
+	for (StmtNode * node : *myBody) {
+		node->typeAnalysis(ta);
+	}
+}
+void IfElseStmtNode::typeAnalysis(TypeAnalysis * ta) {
+	myCond->typeAnalysis(ta);
+	if (!ta->nodeType(myCond)->isBool()) {
+		ta->errCond(myCond->pos());
+	}
+	for (StmtNode * node : *myBodyTrue) {
+		node->typeAnalysis(ta);
+	}
+		for (StmtNode * node : *myBodyFalse) {
+		node->typeAnalysis(ta);
+	}
+}
+void WhileStmtNode::typeAnalysis(TypeAnalysis * ta) {
+	myCond->typeAnalysis(ta);
+	if (!ta->nodeType(myCond)->isBool()) {
+		ta->errCond(myCond->pos());
+	}
+	for (StmtNode * node : *myBody) {
+		node->typeAnalysis(ta);
+	}
+}
 }
