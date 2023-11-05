@@ -221,6 +221,7 @@ public:
 	ExitStmtNode(const Position * p) : StmtNode(p) { }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	void typeAnalysis(TypeAnalysis *) override;
 };
 
 class PostDecStmtNode : public StmtNode{
@@ -264,7 +265,7 @@ public:
 	  std::list<StmtNode *> * bodyTrueIn,
 	  std::list<StmtNode *> * bodyFalseIn)
 	: StmtNode(p), myCond(condIn),
-	  myBodyTrue(bodyTrueIn), myBodyFalse(bodyFalseIn) { }
+	myBodyTrue(bodyTrueIn), myBodyFalse(bodyFalseIn) { }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
 	void typeAnalysis(TypeAnalysis *) override;
@@ -574,6 +575,7 @@ public:
 	bool nameAnalysis(SymbolTable * symTab) override {
 		return true;
 	};
+	void typeAnalysis(TypeAnalysis *) override;
 };
 
 class CallStmtNode : public StmtNode{

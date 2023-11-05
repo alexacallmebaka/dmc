@@ -31,10 +31,13 @@ z : (y:int, f:bool) int {
 }
 
 var1 : int;
+var2 : bool;
 
 main : () void {
   y(1, true);
   var1();
   g(true);
   d(true);
+  var1 = b(1);
+  var2 = b(1);
 }
