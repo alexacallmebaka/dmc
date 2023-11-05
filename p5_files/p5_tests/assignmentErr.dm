@@ -14,4 +14,5 @@ main : () int {
 	b = f;
 	b = C;
 	take a;
+	today I don't feel like doing any work;
 }

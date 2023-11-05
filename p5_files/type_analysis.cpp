@@ -534,4 +534,12 @@ void WhileStmtNode::typeAnalysis(TypeAnalysis * ta) {
 		node->typeAnalysis(ta);
 	}
 }
+
+void ExitStmtNode::typeAnalysis(TypeAnalysis * ta) {
+	ta->nodeType(this, BasicType::produce(VOID));
+}
+
+void MagicNode::typeAnalysis(TypeAnalysis * ta) {
+	ta->nodeType(this, BasicType::produce(BOOL));
+}
 }
