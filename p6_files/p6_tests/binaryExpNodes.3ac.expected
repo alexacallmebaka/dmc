@@ -1,0 +1,46 @@
+[BEGIN GLOBALS]
+a
+b
+c
+main
+[END GLOBALS]
+[BEGIN <init> LOCALS]
+[END <init> LOCALS]
+fun_<init>: enter <init>
+            [b] := 1
+            [c] := 1
+lbl_0:      leave <init>
+[BEGIN main LOCALS]
+tmp0 (tmp var of 8 bytes)
+tmp1 (tmp var of 8 bytes)
+tmp2 (tmp var of 8 bytes)
+tmp3 (tmp var of 8 bytes)
+tmp4 (tmp var of 8 bytes)
+tmp5 (tmp var of 8 bytes)
+tmp6 (tmp var of 8 bytes)
+tmp7 (tmp var of 8 bytes)
+tmp8 (tmp var of 8 bytes)
+[END main LOCALS]
+main:       enter main
+            [tmp0] := 1 ADD64 2
+            [a] := [tmp0]
+            [tmp1] := 1 SUB64 2
+            [a] := [tmp1]
+            [tmp2] := 1 MULT64 2
+            [a] := [tmp2]
+            [tmp3] := [b] DIV64 2
+            [a] := [tmp3]
+            [tmp4] := NEG64 1
+            [a] := [tmp4]
+            [a] := [a] ADD64 1
+            [a] := [a] SUB64 1
+            [c] := 1
+            [tmp5] := [a] LT64 1
+            [c] := [tmp5]
+            [tmp6] := [a] GT64 1
+            [c] := [tmp6]
+            [tmp7] := [a] GTE64 1
+            [c] := [tmp7]
+            [tmp8] := [a] LTE64 [b]
+            [c] := [tmp8]
+lbl_1:      leave main
