@@ -99,15 +99,15 @@ public:
 		return newType;
 	}
 
-	virtual const BasicType * asBasic() const { return subType->asBasic(); }
-	virtual const FnType * asFn() const { return subType->asFn(); }
-	virtual const ErrorType * asError() const { return subType->asError(); }
-	virtual bool isVoid() const { return subType->isVoid(); }
-	virtual bool isInt() const { return subType->isInt(); }
-	virtual bool isBool() const { return subType->isBool(); }
-	virtual bool isString() const { return subType->isString(); }
-	virtual bool isClass() const { return subType->isClass(); }
-	virtual bool isPerfect() const { return true; }
+	virtual const BasicType * asBasic() const override { return subType->asBasic(); }
+	virtual const FnType * asFn() const override { return subType->asFn(); }
+	virtual const ErrorType * asError() const override { return subType->asError(); }
+	virtual bool isVoid() const override { return subType->isVoid(); }
+	virtual bool isInt() const override { return subType->isInt(); }
+	virtual bool isBool() const override { return subType->isBool(); }
+	virtual bool isString() const override { return subType->isString(); }
+	virtual bool isClass() const override { return subType->isClass(); }
+	virtual bool isPerfect() const override { return true; }
 
 	virtual std::string getString() const override {
 		return "perfect " + subType->getString();

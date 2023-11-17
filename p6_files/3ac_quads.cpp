@@ -117,8 +117,8 @@ std::string BinOpQuad::oprString(BinOp opr){
 	case LTE64: return "LTE64";
 	case GTE64: return "GTE64";
 	}
-	throw new InternalError("Unknonw BinOp " + opr);
-
+	std::string error = "Unknonw BinOp " + BinOpQuad::oprString(opr);
+	throw new InternalError(error.c_str());
 }
 
 std::string BinOpQuad::repr(){
