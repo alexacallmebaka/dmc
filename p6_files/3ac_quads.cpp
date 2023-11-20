@@ -154,7 +154,7 @@ WriteQuad::WriteQuad(Opd * src, const DataType * type)
 : mySrc(src), mySrcType(type){ }
 
 std::string WriteQuad::repr(){
-	return "WRITE " + mySrc->valString();
+	return "WRITE " + mySrc->valString() + "";
 }
 
 ReadQuad::ReadQuad(Opd * dst, const DataType * type)

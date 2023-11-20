@@ -6,36 +6,31 @@ x
 var1
 main
 [END GLOBALS]
-[BEGIN <init> LOCALS]
-[END <init> LOCALS]
-fun_<init>: enter <init>
-lbl_0:      leave <init>
 [BEGIN a LOCALS]
 x (formal arg of 8 bytes)
 [END a LOCALS]
 fun_a:      enter a
             getarg 1 [x]
             setret 5
-            goto lbl_1
-lbl_1:      leave a
+            goto lbl_0
+lbl_0:      leave a
 [BEGIN b LOCALS]
 x (formal arg of 8 bytes)
 a (local var of 8 bytes)
 [END b LOCALS]
 fun_b:      enter b
             getarg 1 [x]
-            [a] := 5
             setret [a]
-            goto lbl_2
-lbl_2:      leave b
+            goto lbl_1
+lbl_1:      leave b
 [BEGIN d LOCALS]
 x (formal arg of 8 bytes)
 [END d LOCALS]
 fun_d:      enter d
             getarg 1 [x]
             setret [x]
-            goto lbl_3
-lbl_3:      leave d
+            goto lbl_2
+lbl_2:      leave d
 [BEGIN x LOCALS]
 y (formal arg of 8 bytes)
 f (formal arg of 8 bytes)
@@ -48,8 +43,8 @@ fun_x:      enter x
             call d
             getret [tmp0]
             setret [tmp0]
-            goto lbl_4
-lbl_4:      leave x
+            goto lbl_3
+lbl_3:      leave x
 [BEGIN main LOCALS]
 tmp0 (tmp var of 8 bytes)
 tmp1 (tmp var of 8 bytes)
@@ -64,4 +59,4 @@ main:       enter main
             call x
             getret [tmp1]
             [var1] := [tmp1]
-lbl_5:      leave main
+lbl_4:      leave main

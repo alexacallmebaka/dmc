@@ -4,12 +4,6 @@ b
 c
 main
 [END GLOBALS]
-[BEGIN <init> LOCALS]
-[END <init> LOCALS]
-fun_<init>: enter <init>
-            [b] := 1
-            [c] := 1
-lbl_0:      leave <init>
 [BEGIN main LOCALS]
 tmp0 (tmp var of 8 bytes)
 tmp1 (tmp var of 8 bytes)
@@ -43,4 +37,4 @@ main:       enter main
             [c] := [tmp7]
             [tmp8] := [a] LTE64 [b]
             [c] := [tmp8]
-lbl_1:      leave main
+lbl_0:      leave main

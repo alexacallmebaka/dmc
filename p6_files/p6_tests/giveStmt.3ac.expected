@@ -5,15 +5,9 @@ c
 main
 str_0 "hello"
 [END GLOBALS]
-[BEGIN <init> LOCALS]
-[END <init> LOCALS]
-fun_<init>: enter <init>
-            [b] := 1
-            [c] := 1
-lbl_0:      leave <init>
 [BEGIN main LOCALS]
 [END main LOCALS]
 main:       enter main
             WRITE str_0
             WRITE [b]
-lbl_1:      leave main
+lbl_0:      leave main

@@ -7,7 +7,6 @@ b : (x:int) int {
   return a;
 }
 
-
 d : (x:int) int {
  return x; 
 }

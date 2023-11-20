@@ -4,6 +4,8 @@ namespace drewno_mars{
 
 IRProgram * ProgramNode::to3AC(TypeAnalysis * ta){
 	IRProgram * prog = new IRProgram(ta);
+
+	// prog->toString(true);
 	for (auto global : *myGlobals){
 		global->to3AC(prog);
 	}
@@ -11,9 +13,10 @@ IRProgram * ProgramNode::to3AC(TypeAnalysis * ta){
 }
 
 void FnDeclNode::to3AC(IRProgram * prog){
-	SemSymbol * mySym = myID->getSymbol();
-	Procedure * proc = prog->makeProc(mySym->getName());
+	SemSymbol * symbol = myID->getSymbol();
+	Procedure * proc = prog->makeProc(symbol->getName());
 
+	prog->gatherGlobal(symbol);
 	for (auto formal : *myFormals){
 		formal->to3AC(proc);
 	}
@@ -381,6 +384,7 @@ void VarDeclNode::to3AC(Procedure * proc){
 void VarDeclNode::to3AC(IRProgram * prog){
 	SemSymbol * symbol = myID->getSymbol();
 	assert(symbol != nullptr);
+	// Procedure * proc = prog->makeProc(symbol->getName());
 	prog->gatherGlobal(symbol);
 }
 
