@@ -15,6 +15,5 @@ main : () int  {
     a = 2;
     b = true;
   }
-
   return a;
 }
