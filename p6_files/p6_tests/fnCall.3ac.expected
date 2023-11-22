@@ -20,6 +20,7 @@ a (local var of 8 bytes)
 [END b LOCALS]
 fun_b:      enter b
             getarg 1 [x]
+            [a] := 5
             setret [a]
             goto lbl_1
 lbl_1:      leave b

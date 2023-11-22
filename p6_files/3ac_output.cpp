@@ -70,7 +70,7 @@ Opd * TrueNode::flatten(Procedure * proc){
 }
 
 Opd * FalseNode::flatten(Procedure * proc){
-	Opd * res = new LitOpd("1", 8);
+	Opd * res = new LitOpd("0", 8);
 	return res;
 }
 
@@ -278,17 +278,19 @@ void TakeStmtNode::to3AC(Procedure * proc){
 void IfStmtNode::to3AC(Procedure * proc){
 	Opd * condOpd = myCond->flatten(proc);
 
-	for (auto stmt : *myBody){
-		stmt->to3AC(proc);
-	}
 	//after the if scope
 	Label * afterLabel = proc->makeLabel();
 	Quad * afterQuad = new NopQuad();
 	afterQuad->addLabel(afterLabel);
 
 	Quad * ifQuad = new IfzQuad(condOpd, afterLabel);
-
 	proc->addQuad(ifQuad);
+
+
+	for (auto stmt : *myBody){
+		stmt->to3AC(proc);
+	}
+
 	proc->addQuad(afterQuad);
 }
 
@@ -379,6 +381,14 @@ void VarDeclNode::to3AC(Procedure * proc){
 	SemSymbol * symbol = myID->getSymbol();
 	assert(symbol != nullptr);
 	proc->gatherLocal(symbol);
+  if ( myInit == nullptr ) {
+    return;
+  }
+  Opd * srcOpd = myInit->flatten(proc);
+  Opd * dstOpd = myID->flatten(proc);
+  Quad * quad = new AssignQuad(dstOpd, srcOpd);
+  proc->addQuad(quad);
+
 }
 
 void VarDeclNode::to3AC(IRProgram * prog){
@@ -386,6 +396,15 @@ void VarDeclNode::to3AC(IRProgram * prog){
 	assert(symbol != nullptr);
 	// Procedure * proc = prog->makeProc(symbol->getName());
 	prog->gatherGlobal(symbol);
+  //needs testing
+  //if ( myInit == nullptr ) {
+  //  return;
+  //}
+  //Opd * srcOpd = myInit->flatten(prog);
+  //Opd * dstOpd = myID->flatten(prog);
+  //Quad * quad = new AssignQuad(dstOpd, srcOpd);
+  //prog->addQuad(quad);
+
 }
 
 //We only get to this node if we are in a stmt
