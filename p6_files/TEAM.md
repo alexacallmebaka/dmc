@@ -3,5 +3,5 @@
 * PLEASE DO THIS EVEN IF YOU WORKED ALONE *
 lastname,firstname
 
-nguyen, huyen
-hurd, james
+nguyen,huyen
+hurd,james
