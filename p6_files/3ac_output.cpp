@@ -271,7 +271,7 @@ void GiveStmtNode::to3AC(Procedure * proc){
 void TakeStmtNode::to3AC(Procedure * proc){
 	Opd * childOpd = this->myDst->flatten(proc);
 	const DataType * type = proc->getProg()->nodeType(myDst);
-	Quad * quad = new WriteQuad(childOpd, type);
+	Quad * quad = new ReadQuad(childOpd, type);
 	proc->addQuad(quad);
 }
 

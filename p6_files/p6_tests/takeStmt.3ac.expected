@@ -1,3 +1,12 @@
 [BEGIN GLOBALS]
+funct
 [END GLOBALS]
-
+[BEGIN funct LOCALS]
+x (local var of 8 bytes)
+isCold (local var of 8 bytes)
+[END funct LOCALS]
+fun_funct:  enter funct
+WRITE [x]
+READ [x]
+[isCold] := 0
+lbl_0:      leave funct
