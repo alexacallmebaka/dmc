@@ -396,14 +396,6 @@ void VarDeclNode::to3AC(IRProgram * prog){
 	assert(symbol != nullptr);
 	// Procedure * proc = prog->makeProc(symbol->getName());
 	prog->gatherGlobal(symbol);
-  //needs testing
-  //if ( myInit == nullptr ) {
-  //  return;
-  //}
-  //Opd * srcOpd = myInit->flatten(prog);
-  //Opd * dstOpd = myID->flatten(prog);
-  //Quad * quad = new AssignQuad(dstOpd, srcOpd);
-  //prog->addQuad(quad);
 
 }
 
