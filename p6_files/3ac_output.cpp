@@ -326,7 +326,6 @@ void IfElseStmtNode::to3AC(Procedure * proc){
 }
 
 void WhileStmtNode::to3AC(Procedure * proc){
-	Opd * cond = myCond->flatten(proc);
 
 	Label * headLabel = proc->makeLabel();
 	Quad * headQuad = new NopQuad();
@@ -337,6 +336,7 @@ void WhileStmtNode::to3AC(Procedure * proc){
 	afterQuad->addLabel(afterLabel);
 
 	proc->addQuad(headQuad);
+	Opd * cond = myCond->flatten(proc);
 	Quad * jmpQuad = new IfzQuad(cond, afterLabel);
 	proc->addQuad(jmpQuad);
 
