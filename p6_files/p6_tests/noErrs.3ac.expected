@@ -1,4 +1,5 @@
 [BEGIN GLOBALS]
+g
 func
 [END GLOBALS]
 [BEGIN func LOCALS]
