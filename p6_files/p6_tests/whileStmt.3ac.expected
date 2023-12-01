@@ -1,0 +1,21 @@
+[BEGIN GLOBALS]
+main
+[END GLOBALS]
+[BEGIN main LOCALS]
+a (local var of 8 bytes)
+b (local var of 8 bytes)
+tmp0 (tmp var of 8 bytes)
+[END main LOCALS]
+main:       enter main
+            [a] := 10
+            [b] := 1
+lbl_1:      nop
+            [tmp0] := [a] GT64 0
+            IFZ [tmp0] GOTO lbl_2
+            [a] := [a] SUB64 1
+            goto lbl_1
+lbl_2:      nop
+            [a] := 1
+            setret [a]
+            goto lbl_0
+lbl_0:      leave main
