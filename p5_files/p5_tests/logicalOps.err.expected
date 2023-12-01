@@ -1,0 +1,5 @@
+FATAL [11,7]-[11,8]: Logical operator applied to non-bool operand
+FATAL [13,7]-[13,13]: Logical operator applied to non-bool operand
+FATAL [13,17]-[13,24]: Logical operator applied to non-bool operand
+FATAL [14,7]-[14,8]: Logical operator applied to non-bool operand
+Type Analysis Failed

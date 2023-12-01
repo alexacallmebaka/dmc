@@ -1,0 +1,7 @@
+FATAL [5,2]-[5,7]: Invalid assignment operation
+FATAL [11,8]-[11,9]: Attempt to assign user input to function
+FATAL [12,6]-[12,8]: Non-lval assignment
+FATAL [14,6]-[14,7]: Invalid assignment operand
+FATAL [15,6]-[15,7]: Invalid assignment operand
+FATAL [16,7]-[16,8]: Non-lval assignment
+Type Analysis Failed
