@@ -1,0 +1,4 @@
+FATAL [14,14]-[14,15]: Non-bool expression used as a condition
+FATAL [19,10]-[19,11]: Non-bool expression used as a condition
+FATAL [20,10]-[20,11]: Non-bool expression used as a condition
+Type Analysis Failed

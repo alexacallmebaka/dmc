@@ -1,0 +1,8 @@
+FATAL [16,7]-[16,14]: Invalid equality operation
+FATAL [18,7]-[18,13]: Invalid equality operand
+FATAL [18,17]-[18,23]: Invalid equality operand
+FATAL [19,7]-[19,18]: Invalid equality operation
+FATAL [20,13]-[20,14]: Invalid equality operand
+FATAL [21,7]-[21,8]: Invalid equality operand
+FATAL [21,12]-[21,13]: Invalid equality operand
+Type Analysis Failed

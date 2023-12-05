@@ -1,0 +1,13 @@
+[BEGIN GLOBALS]
+a
+b
+c
+main
+str_0 "hello"
+[END GLOBALS]
+[BEGIN main LOCALS]
+[END main LOCALS]
+main:       enter main
+            WRITE [str_0]
+            WRITE [b]
+lbl_0:      leave main
