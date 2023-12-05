@@ -5,11 +5,28 @@ namespace drewno_mars{
 
 void IRProgram::allocGlobals(){
 	//Choose a label for each global
-	TODO(Implement me)
+	// TODO(Implement me)
+	for (auto member : globals) {
+		SemSymbol* semSymbol = member.first;
+		SymOpd* symOpd = member.second;
+		std::string label = "gbl_" + semSymbol->getName();
+		symOpd->setMemoryLoc(label);
+	}
 }
 
 void IRProgram::datagenX64(std::ostream& out){
-	TODO(Write out data section)
+	// TODO(Write out data section)
+	out << ".data\n";
+	for (auto member : globals) {
+		if (member.first->getName() == "give") { continue; }
+		SymOpd* symOpd = member.second;
+		out << symOpd->getMemoryLoc() << ": .quad 0\n";
+	}
+
+	for (auto member : strings) {
+		LitOpd* strLabel = member.first;
+		out << strLabel->valString() + ": .asciz " << member.second << "\n";
+	}
 	//Put this directive after you write out strings
 	// so that everything is aligned to a quadword value
 	// again
@@ -21,13 +38,36 @@ void IRProgram::toX64(std::ostream& out){
 	allocGlobals();
 	datagenX64(out);
 	// Iterate over each procedure and codegen it
-	TODO(Implement me)
+	// TODO(Implement me)
+	out << ".globl main\n" << ".text\n";
+	for (auto proc : *procs) {
+		proc->toX64(out);
+	}
 }
 
 void Procedure::allocLocals(){
 	//Allocate space for locals
 	// Iterate over each procedure and codegen it
-	TODO(Implement me)
+	// TODO(Implement me)
+	int offset = -24;
+	for (auto member : locals) {
+		SymOpd* symOpd = member.second;
+		std::string memLoc = std::to_string(offset) + "(%rbp)";
+		symOpd->setMemoryLoc(memLoc);
+		offset -= int(symOpd->getWidth());
+	}
+	for (auto temp : temps) {
+		AuxOpd* auxOpd = temp;
+		std::string memLoc = std::to_string(offset) + "(%rbp)";
+		auxOpd->setMemoryLoc(memLoc);
+		offset -= int(auxOpd->getWidth());
+	}
+	for (auto formal : formals) {
+		SymOpd* symOpd = formal;
+		std::string memLoc = std::to_string(offset) + "(%rbp)";
+		symOpd->setMemoryLoc(memLoc);
+		offset -= int(symOpd->getWidth());
+	}
 }
 
 void Procedure::toX64(std::ostream& out){
@@ -50,21 +90,146 @@ void Procedure::toX64(std::ostream& out){
 void Quad::codegenLabels(std::ostream& out){
 	if (labels.empty()){ return; }
 
-	size_t numLabels = labels.size();
-	size_t labelIdx = 0;
-	for ( Label * label : labels){
+	size_t index = 0;
+	for (Label * label : labels){
 		out << label->getName() << ": ";
-		if (labelIdx != numLabels - 1){ out << "\n"; }
-		labelIdx++;
+		if (index != labels.size() - 1){ out << "\n"; }
+		index++;
 	}
 }
 
 void BinOpQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	// TODO(Implement me)
+	src1->genLoadVal(out,A);
+	src2->genLoadVal(out,B);
+
+	bool isBool = false;
+	std::string opStr;
+	std::string boolStr;
+	
+	switch(opr){
+		case BinOp::ADD64: 
+			opStr = "addq ";
+			break;
+		case BinOp::SUB64: 
+			opStr ="subq ";
+			break;
+		case BinOp::DIV64: 
+			opStr = "idivq ";
+			break;
+		case BinOp::MULT64: 
+			opStr = "imul ";
+			break;
+		case BinOp::EQ64:
+			isBool = true; 
+			boolStr = "sete ";
+			opStr = "cmpq ";
+			break;
+		case BinOp::NEQ64:
+			isBool = true; 
+			boolStr = "setne ";
+			opStr = "cmpq ";
+			break;
+		case BinOp::LT64:
+			isBool = true; 
+			boolStr = "setl "; 
+			opStr = "cmpq ";
+			break;
+		case BinOp::GT64: 
+			isBool = true;
+			boolStr = "setg ";
+			opStr = "cmpq ";
+			break;
+		case BinOp::LTE64: 
+			isBool = true;
+			boolStr = "setle ";
+			opStr = "cmpq ";
+			break;
+		case BinOp::GTE64: 
+			isBool = true;
+			boolStr = "setge ";
+			opStr = "cmpq ";
+			break;
+		case BinOp::OR64:
+			opStr = "orq ";
+			break;
+		case BinOp::AND64:
+			opStr = "andq ";
+			break;
+		case BinOp::ADD8: 
+			opStr = "addb ";
+			break;
+		case BinOp::SUB8: 
+			opStr = "subb ";
+			break;
+		case BinOp::DIV8: 
+			opStr = "divb ";
+			break;
+		case BinOp::MULT8: 
+			opStr = "multb ";
+			break;
+		case BinOp::EQ8: 
+			opStr = "cmpb ";
+			break;
+		case BinOp::NEQ8: 
+			opStr = "cmpb ";
+			break;
+		case BinOp::LT8: 
+			opStr = "cmpb ";
+			break;
+		case BinOp::GT8: 
+			opStr = "cmpb ";
+			break;
+		case BinOp::LTE8: 
+			opStr = "cmpb ";
+			break;
+		case BinOp::GTE8: 
+			opStr = "cmpb ";
+			break;
+		case BinOp::OR8: 
+			opStr = "orb ";
+			break;
+		case BinOp::AND8: 
+			opStr = "andb ";
+			break;
+	}
+
+	if (opr == BinOp::DIV64){
+		out << "movq $0, %rdx\n" << opStr << "%rbx\n";
+	} else if (isBool){
+		out << "movq $0, %rcx\n"; 
+		out << opStr << "%rbx, %rax\n";
+		out << boolStr <<  "%cl\n";
+		dst->genStoreVal(out,C);
+	} else {
+		out << opStr << "%rbx, %rax\n";
+	}
+
+	if(!isBool){
+		dst->genStoreVal(out,A);
+	}
 }
 
 void UnaryOpQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	// TODO(Implement me)
+	src->genLoadVal(out, A);
+  std::string opStr;
+	switch (op) {
+		case UnaryOp::NEG64:
+			opStr = "negq ";
+			break;
+		case UnaryOp::NEG8:
+			opStr = "negb ";
+			break;
+		case UnaryOp::NOT64:
+			opStr = "notq ";
+			break;
+		case UnaryOp::NOT8:
+			opStr = "notb ";
+			break;
+	}
+	out << opStr << "%rax \n";
+	dst->genStoreVal(out,A);
 }
 
 void AssignQuad::codegenX64(std::ostream& out){
@@ -93,27 +258,53 @@ void GotoQuad::codegenX64(std::ostream& out){
 }
 
 void IfzQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	// TODO(Implement me)
+	cnd->genLoadVal(out, A);
+  out << "cmpq $0, %rax\n" << "je " << tgt->getName() << "\n";
 }
 
 void NopQuad::codegenX64(std::ostream& out){
-	out << "nop" << "\n";
+	out << "nop" << "\n"; 
 }
 
 void CallQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	TODO(Implement me);
 }
 
 void EnterQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	// TODO(Implement me)
+	out << "pushq %rbp\n" << "movq %rsp, %rbp\n" << "addq $16, %rbp\n";
+	out << "subq $" << myProc->arSize() << ", %rsp\n";
 }
 
 void LeaveQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	// TODO(Implement me)
+	out << "addq $" << myProc->arSize() << ", %rsp\n" << "popq %rbp\n" << "retq\n";
 }
 
 void SetArgQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	// TODO(Implement me)
+	switch (index) {
+		case 1:
+			opd->genLoadVal(out, A);
+			break;
+		case 2:
+			opd->genLoadVal(out, B);
+			break;
+		case 3:
+			opd->genLoadVal(out, C);
+			break;
+		case 4:
+			opd->genLoadVal(out, D);
+			break;
+		case 5:
+			opd->genLoadVal(out, DI);
+		case 6:
+			opd->genLoadVal(out, SI);
+		default:
+			opd->genLoadVal(out, A);
+			out << "pushq %rax\n";
+	}
 }
 
 void GetArgQuad::codegenX64(std::ostream& out){
@@ -121,23 +312,27 @@ void GetArgQuad::codegenX64(std::ostream& out){
 }
 
 void SetRetQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	// TODO(Implement me)
+	opd->genLoadVal(out, A);
 }
 
 void GetRetQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	// TODO(Implement me)
+	opd->genStoreVal(out, A);
 }
 
 void LocQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	// TODO(Implement me)
 }
 
 void SymOpd::genLoadVal(std::ostream& out, Register reg){
-	TODO(Implement me)
+	// TODO(Implement me)
+	out << getMovOp() << " " << getMemoryLoc() << ", " << getReg(reg) << "\n";
 }
 
 void SymOpd::genStoreVal(std::ostream& out, Register reg){
-	TODO(Implement me)
+	// TODO(Implement me)
+	out << getMovOp() << " " << getReg(reg) << ", " << getMemoryLoc() << "\n";
 }
 
 void SymOpd::genLoadAddr(std::ostream& out, Register reg) {
@@ -145,31 +340,38 @@ void SymOpd::genLoadAddr(std::ostream& out, Register reg) {
 }
 
 void AuxOpd::genLoadVal(std::ostream& out, Register reg){
-	TODO(Implement me)
+	// TODO(Implement me)
+	out << getMovOp() << " " << getMemoryLoc() << ", " << getReg(reg) << "\n";
 }
 
 void AuxOpd::genStoreVal(std::ostream& out, Register reg){
-	TODO(Implement me)
+	// TODO(Implement me)
+	out << getMovOp() << " " << getReg(reg) << ", " << getMemoryLoc() << "\n";
 }
 void AuxOpd::genLoadAddr(std::ostream& out, Register reg){
-	TODO(Implement me)
+	// TODO(Implement me)
+	out << getMovOp() << " " << this->getMemoryLoc() << ", " << getReg(reg) << "\n"; 
 }
 
 
 void AddrOpd::genStoreVal(std::ostream& out, Register reg){
 	TODO(Implement me)
+	//might not need
 }
 
 void AddrOpd::genLoadVal(std::ostream& out, Register reg){
 	TODO(Implement me)
+	//might not need
 }
 
 void AddrOpd::genStoreAddr(std::ostream& out, Register reg){
 	TODO(Implement me)
+	//might not need
 }
 
 void AddrOpd::genLoadAddr(std::ostream & out, Register reg){
 	TODO(Implement me)
+	//might not need
 }
 
 void LitOpd::genLoadVal(std::ostream & out, Register reg){

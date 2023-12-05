@@ -584,7 +584,7 @@ public:
 	virtual void typeAnalysis(TypeAnalysis *) override {
 		throw true;
 	}
-	virtual Opd * flatten(Procedure * prog);
+	virtual Opd * flatten(Procedure * prog) override;
 };
 
 class CallStmtNode : public StmtNode{

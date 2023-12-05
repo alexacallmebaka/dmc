@@ -68,7 +68,7 @@ public:
 			case C: return "%cl";
 			case D: return "%dl";
 			case DI: return "%dil";
-			case SI: return "%sil";
+		case SI: return "%sil";
 		}
 		throw new InternalError("no such register");
 	}
