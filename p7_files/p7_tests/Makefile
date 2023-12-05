@@ -1,5 +1,5 @@
-TESTFILES := $(wildcard *.jeff)
-TESTS := $(TESTFILES:.jeff=.test)
+TESTFILES := $(wildcard *.dm)
+TESTS := $(TESTFILES:.dm=.test)
 LIBLINUX := -dynamic-linker /lib64/ld-linux-x86-64.so.2
 
 .PHONY: all
@@ -8,7 +8,7 @@ all: $(TESTS)
 
 %.test:
 	@echo "TEST $*"
-	@../jeffc $*.jeff -o $*.s ;\
+	@../dmc $*.dm -o $*.s ;\
 	COMP_EXIT_CODE=$$?;
 	@as -o $*.o $*.s
 	@ld $(LIBLINUX) \
@@ -16,7 +16,7 @@ all: $(TESTS)
 		/usr/lib/x86_64-linux-gnu/crti.o \
 		-lc \
 		$*.o \
-		../stdjeff.o \
+		../stddm.o \
 		/usr/lib/x86_64-linux-gnu/crtn.o \
 		-o  $*.prog
 	@./$*.prog < $*.in > $*.out; \
