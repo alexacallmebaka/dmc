@@ -5,7 +5,6 @@ namespace drewno_mars{
 
 void IRProgram::allocGlobals(){
 	//Choose a label for each global
-	// TODO(Implement me)
 	for (auto member : globals) {
 		SemSymbol* semSymbol = member.first;
 		SymOpd* symOpd = member.second;
@@ -38,7 +37,6 @@ void IRProgram::toX64(std::ostream& out){
 	allocGlobals();
 	datagenX64(out);
 	// Iterate over each procedure and codegen it
-	// TODO(Implement me)
 	out << ".globl main\n" << ".text\n";
 	for (auto proc : *procs) {
 		proc->toX64(out);
@@ -48,7 +46,6 @@ void IRProgram::toX64(std::ostream& out){
 void Procedure::allocLocals(){
 	//Allocate space for locals
 	// Iterate over each procedure and codegen it
-	// TODO(Implement me)
 	int offset = -24;
 	for (auto member : locals) {
 		SymOpd* symOpd = member.second;
@@ -238,19 +235,40 @@ void AssignQuad::codegenX64(std::ostream& out){
 }
 
 void ReadQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	if (myDst->locString() != "give") {
+		myDst->genLoadVal(out, DI);
+	} else {
+		out << "movq $1, %rdi\n";
+	}
+	if (myDstType->isInt()) {
+		out << "callq getInt\n";
+	} else if (myDstType->isBool()) {
+		out << "callq getBool\n";
+	}
+	myDst->genStoreVal(out, A);
 }
 
 void MagicQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	// TODO(Implement me)
+	out << "callq magic\n";
 }
 
 void ExitQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	// out << "#leave quad to do\n";
+	// out << "movq $60, %rax\n";
+	// out << "syscall\n";
+	out << "call exit\n";
 }
 
 void WriteQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	mySrc->genLoadVal(out, DI);
+	if (mySrcType->isInt()) {
+		out << "callq printInt\n";
+	} else if (mySrcType->isString()) {
+		out << "callq printString\n";
+	} else if (mySrcType->isBool()) {
+		out << "callq printBool\n";
+	}
 }
 
 void GotoQuad::codegenX64(std::ostream& out){
@@ -258,7 +276,6 @@ void GotoQuad::codegenX64(std::ostream& out){
 }
 
 void IfzQuad::codegenX64(std::ostream& out){
-	// TODO(Implement me)
 	cnd->genLoadVal(out, A);
   out << "cmpq $0, %rax\n" << "je " << tgt->getName() << "\n";
 }
@@ -268,11 +285,15 @@ void NopQuad::codegenX64(std::ostream& out){
 }
 
 void CallQuad::codegenX64(std::ostream& out){
-	TODO(Implement me);
+// 	TODO(Implement me);
+int argSize = sym->getDataType()->asFn()->getFormalTypes()->getSize();
+if (argSize >= 7 && argSize%2 != 0) {
+	out << "pushq $0\n";
+}
+out << "callq fun_" << sym->getName() << "\n";
 }
 
 void EnterQuad::codegenX64(std::ostream& out){
-	// TODO(Implement me)
 	out << "pushq %rbp\n";
 	out << "movq %rsp, %rbp\n";
 	out << "addq $16, %rbp\n";
@@ -281,16 +302,12 @@ void EnterQuad::codegenX64(std::ostream& out){
 
 void LeaveQuad::codegenX64(std::ostream& out){
 	// TODO(Implement me)
-	// out << "addq $" << myProc->arSize() << ", %rsp\n";
-	// out << "popq %rbp\n";
-	// out << "retq\n";
-	out << "#leave quad to do\n";
-	out << "movq $60, %rax\n";
-	out << "syscall\n";
+	out << "addq $" << myProc->arSize() << ", %rsp\n";
+	out << "popq %rbp\n";
+	out << "retq\n";
 }
 
 void SetArgQuad::codegenX64(std::ostream& out){
-	// TODO(Implement me)
 	switch (index) {
 		case 1:
 			opd->genLoadVal(out, A);
@@ -329,16 +346,14 @@ void GetRetQuad::codegenX64(std::ostream& out){
 }
 
 void LocQuad::codegenX64(std::ostream& out){
-	// TODO(Implement me)
+	TODO(Implement me)
 }
 
 void SymOpd::genLoadVal(std::ostream& out, Register reg){
-	// TODO(Implement me)
 	out << getMovOp() << " " << getMemoryLoc() << ", " << getReg(reg) << "\n";
 }
 
 void SymOpd::genStoreVal(std::ostream& out, Register reg){
-	// TODO(Implement me)
 	out << getMovOp() << " " << getReg(reg) << ", " << getMemoryLoc() << "\n";
 }
 
@@ -347,38 +362,31 @@ void SymOpd::genLoadAddr(std::ostream& out, Register reg) {
 }
 
 void AuxOpd::genLoadVal(std::ostream& out, Register reg){
-	// TODO(Implement me)
 	out << getMovOp() << " " << getMemoryLoc() << ", " << getReg(reg) << "\n";
 }
 
 void AuxOpd::genStoreVal(std::ostream& out, Register reg){
-	// TODO(Implement me)
 	out << getMovOp() << " " << getReg(reg) << ", " << getMemoryLoc() << "\n";
 }
 void AuxOpd::genLoadAddr(std::ostream& out, Register reg){
-	// TODO(Implement me)
 	out << getMovOp() << " " << this->getMemoryLoc() << ", " << getReg(reg) << "\n"; 
 }
 
 
 void AddrOpd::genStoreVal(std::ostream& out, Register reg){
 	TODO(Implement me)
-	//might not need
 }
 
 void AddrOpd::genLoadVal(std::ostream& out, Register reg){
 	TODO(Implement me)
-	//might not need
 }
 
 void AddrOpd::genStoreAddr(std::ostream& out, Register reg){
 	TODO(Implement me)
-	//might not need
 }
 
 void AddrOpd::genLoadAddr(std::ostream & out, Register reg){
 	TODO(Implement me)
-	//might not need
 }
 
 void LitOpd::genLoadVal(std::ostream & out, Register reg){
