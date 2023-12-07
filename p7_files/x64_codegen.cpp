@@ -273,13 +273,20 @@ void CallQuad::codegenX64(std::ostream& out){
 
 void EnterQuad::codegenX64(std::ostream& out){
 	// TODO(Implement me)
-	out << "pushq %rbp\n" << "movq %rsp, %rbp\n" << "addq $16, %rbp\n";
+	out << "pushq %rbp\n";
+	out << "movq %rsp, %rbp\n";
+	out << "addq $16, %rbp\n";
 	out << "subq $" << myProc->arSize() << ", %rsp\n";
 }
 
 void LeaveQuad::codegenX64(std::ostream& out){
 	// TODO(Implement me)
-	out << "addq $" << myProc->arSize() << ", %rsp\n" << "popq %rbp\n" << "retq\n";
+	// out << "addq $" << myProc->arSize() << ", %rsp\n";
+	// out << "popq %rbp\n";
+	// out << "retq\n";
+	out << "#leave quad to do\n";
+	out << "movq $60, %rax\n";
+	out << "syscall\n";
 }
 
 void SetArgQuad::codegenX64(std::ostream& out){
