@@ -291,6 +291,13 @@ if (argSize >= 7 && argSize%2 != 0) {
 	out << "pushq $0\n";
 }
 out << "callq fun_" << sym->getName() << "\n";
+
+if ( argSize/8 >= 7 ) {
+
+  out << "addq $" << ( argSize - 48 ) << ", %rsp\n";
+
+}
+
 }
 
 void EnterQuad::codegenX64(std::ostream& out){
@@ -310,21 +317,23 @@ void LeaveQuad::codegenX64(std::ostream& out){
 void SetArgQuad::codegenX64(std::ostream& out){
 	switch (index) {
 		case 1:
-			opd->genLoadVal(out, A);
+			opd->genLoadVal(out, DI);
 			break;
 		case 2:
-			opd->genLoadVal(out, B);
+			opd->genLoadVal(out, SI);
 			break;
 		case 3:
-			opd->genLoadVal(out, C);
-			break;
-		case 4:
 			opd->genLoadVal(out, D);
 			break;
+		case 4:
+			opd->genLoadVal(out, C);
+			break;
 		case 5:
-			opd->genLoadVal(out, DI);
+			opd->genLoadVal(out, EIGHT);
+      break;
 		case 6:
-			opd->genLoadVal(out, SI);
+			opd->genLoadVal(out, NINE);
+      break;
 		default:
 			opd->genLoadVal(out, A);
 			out << "pushq %rax\n";
