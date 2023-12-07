@@ -9,24 +9,34 @@ FLAGS=-pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdis
 #FLAGS+=-fprofile-instr-generate -fcoverage-mapping
 
 
-.PHONY: all clean test cleantest
+.PHONY: all clean test cleantest roll
 
 
-all: dmc stddrewno_mars.o
+all: dmc stddrewno_mars.o roll
 
 .PRECIOUS: %.prog
 
 clean:
 	rm -rf *.output *.o *.cc *.hh $(DEPS) dmc parser.dot parser.png
+	ssh "${KUID}@cycle2.eecs.ku.edu" 'rm -f stddm.c stddm.o'
 
 -include $(DEPS)
+
+roll: roll.sh
+	scp roll.sh "${KUID}@cycle2.eecs.ku.edu:~/roll.sh"	
+	ssh "${KUID}@cycle2.eecs.ku.edu" 'chmod +x roll.sh'
 
 dmc: $(OBJ_SRCS)
 	$(CXX) $(FLAGS) -g -std=c++14 -o $@ $(OBJ_SRCS)
 	chmod a+x dmc
 
 stddrewno_mars.o: stddrewno_mars.c
-	gcc -c stddrewno_mars.c
+	#for remote testing, assumes you have the KUID env variable set and passwordless ssh
+	scp stddrewno_mars.c "${KUID}@cycle2.eecs.ku.edu:~/stddm.c"	
+	ssh "${KUID}@cycle2.eecs.ku.edu" 'gcc -c stddm.c'
+
+
+	#gcc -c stddrewno_mars.c
 
 %.o: %.cpp 
 	$(CXX) $(FLAGS) -g -std=c++14 -MMD -MP -c -o $@ $<
