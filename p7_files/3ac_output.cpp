@@ -20,7 +20,7 @@ static void formalsTo3AC(Procedure * proc,
 		SemSymbol * sym = formal->ID()->getSymbol();
 		SymOpd * opd = proc->getSymOpd(sym);
 
-		Quad * inQuad = new GetArgQuad(argIdx, opd, false);
+		Quad * inQuad = new GetArgQuad(argIdx, opd, false, myFormals->size());
 		proc->addQuad(inQuad);
 		argIdx += 1;
 	}

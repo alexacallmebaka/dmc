@@ -332,7 +332,32 @@ void SetArgQuad::codegenX64(std::ostream& out){
 }
 
 void GetArgQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	//TODO(Implement me)
+  
+  switch(index) {
+    case 1: 
+      opd->genStoreVal(out, DI);
+      break;
+    case 2: 
+      opd->genStoreVal(out, SI);
+      break;
+    case 3: 
+      opd->genStoreVal(out, D);
+      break;
+    case 4: 
+      opd->genStoreVal(out, C);
+      break;
+    case 5: 
+      opd->genStoreVal(out, EIGHT);
+      break;
+    case 6: 
+      opd->genStoreVal(out, NINE);
+      break;
+    default:
+      size_t offset = 8*(totalArgs-index);
+      out << "movq " << offset << "(%rbp), %rax\n";
+      opd->genStoreVal(out,A);
+  }
 }
 
 void SetRetQuad::codegenX64(std::ostream& out){
