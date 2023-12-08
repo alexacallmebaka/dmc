@@ -9,12 +9,22 @@ all: $(TESTS)
 %.test:
 	@echo "TEST $*"
 	@../dmc $*.dm -o $*.s ;\
-	COMP_EXIT_CODE=$$?;\
-	./tester.sh $*.s $*.in > $*.out;\
+	COMP_EXIT_CODE=$$?
+	@as -o $*.o $*.s
+	@ld $(LIBLINUX) \
+		/usr/lib/x86_64-linux-gnu/crt1.o \
+		/usr/lib/x86_64-linux-gnu/crti.o \
+		-lc \
+		$*.o \
+		../stddrewno_mars.o \
+		/usr/lib/x86_64-linux-gnu/crtn.o \
+		-o  $*.prog
+	@./$*.prog < $*.in > $*.out; \
+#	./tester.sh $*.s $*.in > $*.out;\
 	diff -B --ignore-all-space $*.out $*.out.expected;\
 	RUN_DIFF_EXIT=$$?;\
 	exit $$RUN_DIFF_EXIT
 
 clean:
 	rm -f *.3ac *.out *.err *.o *.s *.prog
-	ssh "${KUID}@cycle2.eecs.ku.edu" 'rm -rf *.prog *.o *.s *.in'
+#	ssh "${KUID}@cycle2.eecs.ku.edu" 'rm -rf *.prog *.o *.s *.in'
