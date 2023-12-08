@@ -287,13 +287,21 @@ void NopQuad::codegenX64(std::ostream& out){
 void CallQuad::codegenX64(std::ostream& out){
 // 	TODO(Implement me);
 int argSize = sym->getDataType()->asFn()->getFormalTypes()->getSize();
-if (argSize >= 7 && argSize%2 != 0) {
-	out << "pushq $0\n";
-}
+int argNum = argSize/8;
+
+//for 16 byte alignment of stack
+//bool extraSpace = false;
+//
+//if ( argNum >= 7 && argNum%2 != 0 ) {
+//	out << "pushq $0\n";
+//  extraSpace = true;
+//}
+
 out << "callq fun_" << sym->getName() << "\n";
 
-if ( argSize/8 >= 7 ) {
+if ( argNum >= 7 ) {
 
+//  out << "addq $" << ( argSize - 48 - ( extraSpace ? 8 : 0 ) ) << ", %rsp\n";
   out << "addq $" << ( argSize - 48 ) << ", %rsp\n";
 
 }
