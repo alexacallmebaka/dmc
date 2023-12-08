@@ -321,19 +321,11 @@ void SetArgQuad::codegenX64(std::ostream& out){
 			opd->genLoadVal(out, C);
 			break;
 		case 5:
-<<<<<<< HEAD
-			opd->genLoadVal(out, DI);
-			break;
-		case 6:
-			opd->genLoadVal(out, SI);
-			break;
-=======
 			opd->genLoadVal(out, EIGHT);
       break;
 		case 6:
 			opd->genLoadVal(out, NINE);
       break;
->>>>>>> 1bbf409736180f389980004b2888052692382f61
 		default:
 			opd->genLoadVal(out, A);
 			out << "pushq %rax\n";
