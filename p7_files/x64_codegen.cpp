@@ -286,11 +286,11 @@ void NopQuad::codegenX64(std::ostream& out){
 
 void CallQuad::codegenX64(std::ostream& out){
 // 	TODO(Implement me);
-int argSize = sym->getDataType()->asFn()->getFormalTypes()->getSize();
-if (argSize >= 7 && argSize%2 != 0) {
-	out << "pushq $0\n";
-}
-out << "callq fun_" << sym->getName() << "\n";
+	int argSize = sym->getDataType()->asFn()->getFormalTypes()->getSize();
+	if (argSize >= 7 && argSize%2 != 0) {
+		out << "pushq $0\n";
+	}
+	out << "callq fun_" << sym->getName() << "\n";
 }
 
 void EnterQuad::codegenX64(std::ostream& out){
@@ -301,7 +301,6 @@ void EnterQuad::codegenX64(std::ostream& out){
 }
 
 void LeaveQuad::codegenX64(std::ostream& out){
-	// TODO(Implement me)
 	out << "addq $" << myProc->arSize() << ", %rsp\n";
 	out << "popq %rbp\n";
 	out << "retq\n";
@@ -323,8 +322,10 @@ void SetArgQuad::codegenX64(std::ostream& out){
 			break;
 		case 5:
 			opd->genLoadVal(out, DI);
+			break;
 		case 6:
 			opd->genLoadVal(out, SI);
+			break;
 		default:
 			opd->genLoadVal(out, A);
 			out << "pushq %rax\n";
