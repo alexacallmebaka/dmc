@@ -285,27 +285,16 @@ void NopQuad::codegenX64(std::ostream& out){
 }
 
 void CallQuad::codegenX64(std::ostream& out){
-// 	TODO(Implement me);
-int argSize = sym->getDataType()->asFn()->getFormalTypes()->getSize();
-int argNum = argSize/8;
-
-//for 16 byte alignment of stack
-//bool extraSpace = false;
-//
-//if ( argNum >= 7 && argNum%2 != 0 ) {
-//	out << "pushq $0\n";
-//  extraSpace = true;
-//}
-
-out << "callq fun_" << sym->getName() << "\n";
-
-if ( argNum >= 7 ) {
-
-//  out << "addq $" << ( argSize - 48 - ( extraSpace ? 8 : 0 ) ) << ", %rsp\n";
-  out << "addq $" << ( argSize - 48 ) << ", %rsp\n";
-
-}
-
+	int argSize = sym->getDataType()->asFn()->getFormalTypes()->getSize();
+	int argNum = argSize/8;
+	if ( argNum >= 7 && argNum % 2 != 0) {
+		argSize+=8;
+		out << "pushq $0\n";
+	}
+	out << "callq fun_" << sym->getName() << "\n";
+	if ( argNum >= 7) {
+		out << "addq $" << ( argSize - 48 ) << ", %rsp\n";
+	}
 }
 
 void EnterQuad::codegenX64(std::ostream& out){
@@ -316,7 +305,6 @@ void EnterQuad::codegenX64(std::ostream& out){
 }
 
 void LeaveQuad::codegenX64(std::ostream& out){
-	// TODO(Implement me)
 	out << "addq $" << myProc->arSize() << ", %rsp\n";
 	out << "popq %rbp\n";
 	out << "retq\n";
@@ -371,6 +359,7 @@ void GetArgQuad::codegenX64(std::ostream& out){
       opd->genStoreVal(out, NINE);
       break;
     default:
+			if (totalArgs % 2 != 0) totalArgs++;
       size_t offset = 8*(totalArgs-index);
       out << "movq " << offset << "(%rbp), %rax\n";
       opd->genStoreVal(out,A);
