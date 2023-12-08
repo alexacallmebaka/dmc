@@ -287,8 +287,12 @@ void NopQuad::codegenX64(std::ostream& out){
 void CallQuad::codegenX64(std::ostream& out){
 	int argSize = sym->getDataType()->asFn()->getFormalTypes()->getSize();
 	int argNum = argSize/8;
+	if ( argNum >= 7 && argNum % 2 != 0) {
+		argSize+=8;
+		out << "pushq $0\n";
+	}
 	out << "callq fun_" << sym->getName() << "\n";
-	if ( argNum >= 7 ) {
+	if ( argNum >= 7) {
 		out << "addq $" << ( argSize - 48 ) << ", %rsp\n";
 	}
 }
@@ -355,6 +359,7 @@ void GetArgQuad::codegenX64(std::ostream& out){
       opd->genStoreVal(out, NINE);
       break;
     default:
+			if (totalArgs % 2 != 0) totalArgs++;
       size_t offset = 8*(totalArgs-index);
       out << "movq " << offset << "(%rbp), %rax\n";
       opd->genStoreVal(out,A);
