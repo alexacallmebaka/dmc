@@ -232,8 +232,8 @@ std::string SetArgQuad::repr(){
 	return res;
 }
 
-GetArgQuad::GetArgQuad(size_t indexIn, Opd * opdIn, bool isRecordIn) 
-: index(indexIn), opd(opdIn), myIsRecord(isRecordIn){
+GetArgQuad::GetArgQuad(size_t indexIn, Opd * opdIn, bool isRecordIn, size_t inTotalArgs) 
+: index(indexIn), opd(opdIn), myIsRecord(isRecordIn), totalArgs(inTotalArgs){
 }
 
 std::string GetArgQuad::repr(){

@@ -285,12 +285,12 @@ void NopQuad::codegenX64(std::ostream& out){
 }
 
 void CallQuad::codegenX64(std::ostream& out){
-// 	TODO(Implement me);
 	int argSize = sym->getDataType()->asFn()->getFormalTypes()->getSize();
-	if (argSize >= 7 && argSize%2 != 0) {
-		out << "pushq $0\n";
-	}
+	int argNum = argSize/8;
 	out << "callq fun_" << sym->getName() << "\n";
+	if ( argNum >= 7 ) {
+		out << "addq $" << ( argSize - 48 ) << ", %rsp\n";
+	}
 }
 
 void EnterQuad::codegenX64(std::ostream& out){
@@ -309,23 +309,31 @@ void LeaveQuad::codegenX64(std::ostream& out){
 void SetArgQuad::codegenX64(std::ostream& out){
 	switch (index) {
 		case 1:
-			opd->genLoadVal(out, A);
+			opd->genLoadVal(out, DI);
 			break;
 		case 2:
-			opd->genLoadVal(out, B);
+			opd->genLoadVal(out, SI);
 			break;
 		case 3:
-			opd->genLoadVal(out, C);
-			break;
-		case 4:
 			opd->genLoadVal(out, D);
 			break;
+		case 4:
+			opd->genLoadVal(out, C);
+			break;
 		case 5:
+<<<<<<< HEAD
 			opd->genLoadVal(out, DI);
 			break;
 		case 6:
 			opd->genLoadVal(out, SI);
 			break;
+=======
+			opd->genLoadVal(out, EIGHT);
+      break;
+		case 6:
+			opd->genLoadVal(out, NINE);
+      break;
+>>>>>>> 1bbf409736180f389980004b2888052692382f61
 		default:
 			opd->genLoadVal(out, A);
 			out << "pushq %rax\n";
@@ -333,7 +341,32 @@ void SetArgQuad::codegenX64(std::ostream& out){
 }
 
 void GetArgQuad::codegenX64(std::ostream& out){
-	TODO(Implement me)
+	//TODO(Implement me)
+  
+  switch(index) {
+    case 1: 
+      opd->genStoreVal(out, DI);
+      break;
+    case 2: 
+      opd->genStoreVal(out, SI);
+      break;
+    case 3: 
+      opd->genStoreVal(out, D);
+      break;
+    case 4: 
+      opd->genStoreVal(out, C);
+      break;
+    case 5: 
+      opd->genStoreVal(out, EIGHT);
+      break;
+    case 6: 
+      opd->genStoreVal(out, NINE);
+      break;
+    default:
+      size_t offset = 8*(totalArgs-index);
+      out << "movq " << offset << "(%rbp), %rax\n";
+      opd->genStoreVal(out,A);
+  }
 }
 
 void SetRetQuad::codegenX64(std::ostream& out){
