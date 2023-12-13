@@ -33,7 +33,7 @@ private:
 };
 
 enum Register{
-	A, B, C, D, DI, SI
+	A, B, C, D, DI, SI, EIGHT, NINE
 };
 
 class RegUtils{
@@ -46,6 +46,8 @@ public:
 			case D: return "d";
 			case DI: return "di";
 			case SI: return "si";
+      case EIGHT: return "8";
+      case NINE: return "9";
 		}
 	}
 
@@ -57,6 +59,8 @@ public:
 			case D: return "%rdx";
 			case DI: return "%rdi";
 			case SI: return "%rsi";
+      case EIGHT: return "%r8";
+      case NINE: return "%r9";
 		}
 		throw new InternalError("no such register");
 	}
@@ -69,6 +73,8 @@ public:
 			case D: return "%dl";
 			case DI: return "%dil";
 			case SI: return "%sil";
+      case EIGHT: return "%r8l";
+      case NINE: return "%r9l";
 		}
 		throw new InternalError("no such register");
 	}
@@ -455,7 +461,7 @@ private:
 
 class GetArgQuad : public Quad{
 public:
-	GetArgQuad(size_t indexIn, Opd * opdIn, bool isRecord);
+	GetArgQuad(size_t indexIn, Opd * opdIn, bool isRecord, size_t inTotalArgs);
 	std::string repr() override;
 	void codegenX64(std::ostream& out) override;
 	Opd * getDst(){ return opd; }
@@ -464,6 +470,7 @@ private:
 	size_t index;
 	Opd * opd;
 	bool myIsRecord;
+  size_t totalArgs;
 };
 
 class SetRetQuad : public Quad{
