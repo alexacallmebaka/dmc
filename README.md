@@ -1,8 +1,8 @@
 # dmc: The Drewno Mars Compiler 🕺
 
 This project was created 
-during the Fall 2023 offering of [EECS665: Compiler Construction](https://compilers.cool)
-as a collaboration between [James Hurd](https://jameshurd.net/),
+during the Fall 2023 offering of [EECS 665: Compiler Construction](https://compilers.cool)
+at the University of Kansas as a collaboration between [James Hurd](https://jameshurd.net/),
 [Huyen Nguyen](https://www.linkedin.com/in/minhhuyen-nguyen/), and our
 instructor (and, much to his chagrin, the project's namesake) 
 [Professor Drew Davidson](https://drew.davidson.cool/).
