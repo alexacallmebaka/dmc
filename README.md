@@ -1,4 +1,4 @@
-# DMC: The Drewno Mars Compiler 🕺
+# dmc: The Drewno Mars Compiler 🕺
 
 This project was created 
 during the Fall 2023 offering of [EECS665: Compiler Construction](https://compilers.cool)
